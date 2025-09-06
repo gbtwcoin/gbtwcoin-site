@@ -5,191 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GBTW • Space Background (Arcade)</title>
   <style>
-    :root{
-      --bg:#05060b;
-      --glow:#6ae1ff;
-      --glow2:#9a7cff;
-      --planet1:#4422ff;
-      --planet2:#00d0ff;
-      --moon:#d9e4ff;
-    }
-    html,body{height:100%}
-    body{margin:0;background:radial-gradient(1200px 800px at 70% 20%, #0b0f2a 0%, transparent 60%),
-                               radial-gradient(900px 900px at 30% 80%, #0a0f24 0%, transparent 60%),
-                               var(--bg);
-         overflow:hidden; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;}
+    body{margin:0;height:100%;background:#05060b;overflow:hidden;font-family:sans-serif}
+    canvas#starfield{position:fixed;inset:0;display:block;z-index:0}
 
-    /* LAYERS */
-    .layer{position:fixed;inset:0;pointer-events:none}
-    #starfield{position:fixed;inset:0;display:block}
+    /* Realistic-ish planets */
+    .planet{position:absolute;border-radius:50%;}
+    .planet.earth{width:220px;height:220px;top:10%;left:5%;background:radial-gradient(circle at 35% 30%, #8fd3ff 0%, #1b73c7 60%, #0c2e63 100%);
+      box-shadow: inset -20px -30px 60px rgba(0,0,0,.35), 0 0 30px rgba(90,170,255,.35);
+      animation: earthFloat 140s linear infinite;}
+    .planet.mars{width:180px;height:180px;bottom:10%;right:5%;background:radial-gradient(circle at 40% 30%, #ff9b6a 0%, #d4552a 55%, #6e2814 100%);
+      box-shadow: inset -18px -28px 50px rgba(0,0,0,.35), 0 0 26px rgba(255,120,80,.28);
+      animation: marsFloat 160s linear infinite;}
+    .planet.saturn{width:320px;height:320px;top:-8%;right:20%;background:radial-gradient(circle at 50% 40%, #fbe8b9 0%, #e3c47a 55%, #9b7a41 100%);
+      box-shadow: inset -22px -30px 64px rgba(0,0,0,.35), 0 0 34px rgba(250,225,160,.28);
+      animation: saturnFloat 180s linear infinite;}
+    .planet.saturn:before{content:"";position:absolute;left:-30px;right:-30px;top:46%;height:26px;border-radius:50%;background:linear-gradient(90deg, rgba(255,255,255,.2), rgba(230,190,120,.8), rgba(255,255,255,.2));transform:rotate(-12deg)}
 
-    /* PLANETS (arcade style) */
-    .planet{position:absolute;border-radius:50%;filter:drop-shadow(0 0 20px rgba(154,124,255,.6)) drop-shadow(0 0 40px rgba(106,225,255,.25));}
-    .planet:after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.8), rgba(255,255,255,.1) 30%, transparent 60%)}
+    @keyframes earthFloat{0%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}100%{transform:translate(0,0)}}
+    @keyframes marsFloat{0%{transform:translate(0,0)}50%{transform:translate(-20px,10px)}100%{transform:translate(0,0)}}
+    @keyframes saturnFloat{0%{transform:translate(0,0)}50%{transform:translate(30px,-10px)}100%{transform:translate(0,0)}}
 
-    .planet.p1{width:420px;height:420px;background:radial-gradient(circle at 60% 40%, #6e56ff 0%, #3a20ff 60%, #241366 100%);
-      animation: drift1 120s linear infinite;opacity:.6}
-    .planet.p2{width:260px;height:260px;background:radial-gradient(circle at 40% 30%, #22d4ff 0%, #0aa1cc 60%, #075a8a 100%);
-      animation: drift2 180s linear infinite;opacity:.55}
-    .planet.moon{width:180px;height:180px;background:radial-gradient(circle at 35% 30%, #ffffff 0%, #e8f0ff 45%, #b7c7e6 75%, #8695b3 100%);
-      box-shadow: inset -20px -30px 60px rgba(0,0,0,.35), 0 0 30px rgba(217,228,255,.35);
-      animation: drift3 160s linear infinite;opacity:.9}
-
-    @keyframes drift1{0%{transform:translate(-30%, 10%) scale(1)}50%{transform:translate(120%, -5%) scale(1.08)}100%{transform:translate(-30%, 10%) scale(1)}}
-    @keyframes drift2{0%{transform:translate(70%, 70%) scale(1)}50%{transform:translate(-10%, 30%) scale(0.9)}100%{transform:translate(70%, 70%) scale(1)}}
-    @keyframes drift3{0%{transform:translate(10%, -20%) scale(1)}50%{transform:translate(80%, 20%) scale(1.05)}100%{transform:translate(10%, -20%) scale(1)}}
-
-    /* ROCKET (arcade SVG) */
-    .rocket{position:fixed;left:-200px;bottom:15%;width:120px;height:auto;opacity:0;transform:translateX(-50px) rotate(8deg);
-      filter: drop-shadow(0 6px 14px rgba(0,0,0,.35)) drop-shadow(0 0 8px rgba(154,124,255,.5));
-    }
-    .rocket.active{animation: flyby 7.5s cubic-bezier(.2,.6,.2,1) forwards;}
-
-    @keyframes flyby{
-      0%{opacity:0; transform: translate(-120px, 60px) rotate(15deg)}
-      4%{opacity:1}
-      60%{opacity:1}
-      100%{opacity:0; transform: translate(calc(100vw + 200px), -240px) rotate(12deg)}
-    }
-
-    /* COMET TRAIL */
-    .rocket .flame{filter:blur(0.4px)}
-    .trail{position:fixed;pointer-events:none;mix-blend-mode:screen;}
-
-    /* CONTENT OVERLAY placeholder */
-    .content{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-    .hud{pointer-events:auto;background:rgba(10,14,36,.28);border:1px solid rgba(120,132,190,.35);backdrop-filter: blur(6px);padding:14px 18px;border-radius:14px;color:#d9e4ff;font-weight:700;letter-spacing:.5px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+    /* Arrow and riders */
+    .arrow-riders{position:absolute;bottom:20%;left:-400px;width:800px;height:auto;animation:flyArrow 25s linear infinite;z-index:2}
+    @keyframes flyArrow{0%{transform:translateX(-400px) translateY(0)}100%{transform:translateX(120vw) translateY(-60px)}}
   </style>
 </head>
 <body>
   <canvas id="starfield"></canvas>
 
-  <!-- PLANET LAYER -->
-  <div class="layer">
-    <div class="planet p1" style="top:10%; left:-12%"></div>
-    <div class="planet p2" style="bottom:-8%; right:-6%"></div>
-    <div class="planet moon" style="top:-6%; right:12%"></div>
-  </div>
+  <!-- PLANETS -->
+  <div class="planet earth"></div>
+  <div class="planet mars"></div>
+  <div class="planet saturn"></div>
 
-  <!-- ROCKET SVG (arcade) -->
-  <svg class="rocket" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <!-- Arrow with riders (simplified cartoon style) -->
+  <svg class="arrow-riders" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <linearGradient id="bodyGrad" x1="0" x2="1">
-        <stop offset="0%" stop-color="#9a7cff"/>
-        <stop offset="100%" stop-color="#6ae1ff"/>
-      </linearGradient>
-      <linearGradient id="flameGrad" x1="0" x2="0" y1="0" y2="1">
-        <stop offset="0%" stop-color="#fff29a"/>
-        <stop offset="50%" stop-color="#ff7e42"/>
-        <stop offset="100%" stop-color="#ff2d78"/>
+      <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#00ff95"/>
+        <stop offset="100%" stop-color="#00ffc8"/>
       </linearGradient>
     </defs>
-    <!-- body -->
-    <g>
-      <ellipse cx="100" cy="100" rx="58" ry="84" fill="url(#bodyGrad)" stroke="#201b3c" stroke-width="6"/>
-      <circle cx="122" cy="88" r="16" fill="#091022" stroke="#2f2d5c" stroke-width="6"/>
-      <path d="M100 16 L130 46 L70 46 Z" fill="#2c2450" />
-      <path d="M142 118 L192 138 L142 158 Z" fill="#2c2450" />
-      <path d="M58 118 L8 138 L58 158 Z" fill="#2c2450" />
-    </g>
-    <!-- flame -->
-    <g class="flame">
-      <path d="M100 178 C 86 160, 82 150, 100 140 C 118 150, 114 160, 100 178 Z" fill="url(#flameGrad)" opacity=".95">
-        <animate attributeName="d" dur="240ms" repeatCount="indefinite"
-          values="M100 178 C 86 160, 82 150, 100 140 C 118 150, 114 160, 100 178 Z;
-                  M100 182 C 84 162, 84 152, 100 140 C 116 152, 116 162, 100 182 Z;
-                  M100 178 C 86 160, 82 150, 100 140 C 118 150, 114 160, 100 178 Z"/>
-      </path>
+    <!-- green arrow line -->
+    <polyline points="10,350 120,300 240,330 360,250 480,280 580,180" fill="none" stroke="url(#grad)" stroke-width="12" />
+    <polygon points="580,180 560,190 585,210 600,160" fill="#00ffc8" />
+    <!-- riders placeholder shapes (Mordecai & Rigby style silhouettes) -->
+    <g transform="translate(320,200) scale(0.6)">
+      <ellipse cx="-40" cy="-60" rx="40" ry="60" fill="#58a9ff" stroke="#1b2b5a" stroke-width="6"/>
+      <ellipse cx="40" cy="-20" rx="50" ry="40" fill="#b68452" stroke="#3b2a19" stroke-width="6"/>
     </g>
   </svg>
 
-  <!-- CONTENT OVERLAY PLACEHOLDER -->
-  <div class="content">
-    <div class="hud">Content overlay placeholder — we’ll add token info & chart next 😎</div>
-  </div>
-
 <script>
-// ===== Starfield (3D-ish) =====
+// ===== Starfield =====
 (function(){
-  const canvas = document.getElementById('starfield');
-  const ctx = canvas.getContext('2d');
-  let w, h, dpr = Math.min(window.devicePixelRatio||1, 2);
+  const canvas=document.getElementById('starfield');
+  const ctx=canvas.getContext('2d');
+  let w,h,dpr=Math.min(window.devicePixelRatio||1,2);
+  function resize(){w=canvas.width=Math.floor(innerWidth*dpr);h=canvas.height=Math.floor(innerHeight*dpr);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px'}
+  window.addEventListener('resize',resize,{passive:true});resize();
 
-  function resize(){
-    w = canvas.width = Math.floor(innerWidth * dpr);
-    h = canvas.height = Math.floor(innerHeight * dpr);
-    canvas.style.width = innerWidth + 'px';
-    canvas.style.height = innerHeight + 'px';
-  }
-  window.addEventListener('resize', resize, {passive:true});
-  resize();
-
-  const STAR_LAYERS = [
-    {count: 120, speed: 0.02, size: 1.0, alpha: 0.9},
-    {count: 180, speed: 0.05, size: 0.9, alpha: 0.7},
-    {count: 240, speed: 0.09, size: 0.8, alpha: 0.55}
-  ];
-
-  let stars = [];
-  function init(){
-    stars.length = 0;
-    STAR_LAYERS.forEach((L, li)=>{
-      for(let i=0;i<L.count;i++){
-        stars.push({
-          x: Math.random()*w,
-          y: Math.random()*h,
-          z: Math.random()*1 + 0.2 + li*0.2, // depth
-          s: L.size,
-          a: L.alpha,
-          sp: L.speed*(0.6+Math.random()*0.8)
-        });
-      }
-    });
-  }
+  const STAR_LAYERS=[{count:120,speed:0.02,size:1,alpha:0.9},{count:180,speed:0.05,size:0.9,alpha:0.7},{count:240,speed:0.09,size:0.8,alpha:0.55}];
+  let stars=[];function init(){stars.length=0;STAR_LAYERS.forEach((L,li)=>{for(let i=0;i<L.count;i++){stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*1+0.2+li*0.2,s:L.size,a:L.alpha,sp:L.speed*(0.6+Math.random()*0.8)})}})}
   init();
 
-  function tick(){
-    ctx.clearRect(0,0,w,h);
-    // subtle backdrop glow
-    const g = ctx.createRadialGradient(w*0.7,h*0.3,0,w*0.7,h*0.3,Math.max(w,h)*0.9);
-    g.addColorStop(0,'rgba(106,225,255,0.05)');
-    g.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
-
-    for(const st of stars){
-      st.x += st.sp * dpr * 1.4;      // horizontal drift (ship moving forward-right)
-      st.y -= st.sp * dpr * 0.2;      // slight upward drift
-      if(st.x > w+4 || st.y < -4){    // wrap
-        st.x = -4; st.y = Math.random()*h; st.z = st.z; // keep depth
-      }
-      const sz = st.s * dpr * (0.6 + st.z*0.8);
-      ctx.globalAlpha = st.a * (0.6 + st.z*0.6);
-      ctx.fillStyle = '#cfe6ff';
-      ctx.fillRect(st.x, st.y, sz, sz);
-    }
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(tick);
-  }
+  function tick(){ctx.clearRect(0,0,w,h);for(const st of stars){st.x+=st.sp*dpr*1.4;st.y-=st.sp*dpr*0.2;if(st.x>w+4||st.y<-4){st.x=-4;st.y=Math.random()*h}const sz=st.s*dpr*(0.6+st.z*0.8);ctx.globalAlpha=st.a*(0.6+st.z*0.6);ctx.fillStyle='#cfe6ff';ctx.fillRect(st.x,st.y,sz,sz)}ctx.globalAlpha=1;requestAnimationFrame(tick)}
   requestAnimationFrame(tick);
-})();
-
-// ===== Rocket fly-by every 20–40s =====
-(function(){
-  const rocket = document.querySelector('.rocket');
-  function launch(){
-    if(!rocket) return;
-    rocket.classList.remove('active');
-    // randomize start height a bit
-    const base = 12 + Math.random()*30; // 12–42%
-    rocket.style.bottom = base + '%';
-    // trigger new run
-    void rocket.offsetWidth; // reflow
-    rocket.classList.add('active');
-    // schedule next fly-by
-    const next = 20000 + Math.random()*20000; // 20–40s
-    setTimeout(launch, next);
-  }
-  setTimeout(launch, 2000); // first pass after 2s
 })();
 </script>
 </body>
