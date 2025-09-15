@@ -16,14 +16,18 @@
     }
     h1 {
       font-size: 36px;
-      margin-top: 12%;
+      margin-top: 15%;
       color: #ff3af2;
       text-shadow: 3px 3px 0px #000, 0 0 12px #ff3af2;
+      position: relative;
+      z-index: 2;
     }
     h2 {
       font-size: 20px;
       color: #00e5ff;
       text-shadow: 2px 2px 0px #000, 0 0 10px #00e5ff;
+      position: relative;
+      z-index: 2;
     }
     .btn {
       display: inline-block;
@@ -36,6 +40,8 @@
       transition: transform .1s;
       background: #1a1a20;
       box-shadow: 0 0 12px #ffde59;
+      position: relative;
+      z-index: 2;
     }
     .btn:hover {
       transform: scale(1.08);
@@ -47,6 +53,7 @@
       left: 20px;
       font-size: 14px;
       color: #a64dff;
+      z-index: 2;
     }
     .hud-right {
       position: absolute;
@@ -54,11 +61,14 @@
       right: 20px;
       font-size: 14px;
       color: #a64dff;
+      z-index: 2;
     }
     .hearts {
       margin-top: 30px;
       font-size: 18px;
       color: #ffde59;
+      position: relative;
+      z-index: 2;
     }
     /* CRT Scanline Overlay */
     body:after {
@@ -72,36 +82,10 @@
       );
       pointer-events: none;
       mix-blend-mode: overlay;
+      z-index: 3;
     }
-
-    /* Animated pixel sprites */
-    .sprite {
-      position: absolute;
-      image-rendering: pixelated;
-      width: 40px;
-      height: 40px;
-      opacity: 0.85;
-      animation: float 12s linear infinite;
-    }
-    .sprite.coin {
-      background: radial-gradient(circle, #fff6a8 0%, #ffd64f 50%, #ff9a1a 100%);
-      border-radius: 50%;
-      box-shadow: 0 0 10px #ffde59;
-    }
-    .sprite.rocket {
-      background: linear-gradient(to bottom, #ff3af2 0%, #ff512f 100%);
-      clip-path: polygon(50% 0%, 70% 40%, 70% 100%, 30% 100%, 30% 40%);
-      box-shadow: 0 0 8px #ff3af2;
-    }
-    @keyframes float {
-      0% { transform: translateY(0) translateX(0); opacity: 0; }
-      10% { opacity: 1; }
-      50% { transform: translateY(-200px) translateX(100px); opacity: 1; }
-      90% { opacity: 1; }
-      100% { transform: translateY(-400px) translateX(200px); opacity: 0; }
-    }
-      /* === Animated pixel sprites === */
-    .sprite-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+    /* === Animated pixel sprites === */
+    .sprite-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1}
     .sprite{position:absolute;will-change:transform,opacity;image-rendering:pixelated;filter:drop-shadow(0 0 6px rgba(255,255,255,.25))}
     .sprite svg{width:48px;height:48px}
     @keyframes driftUpRight{0%{transform:translate(var(--x,0), var(--y,0)) scale(var(--s,1)); opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(calc(var(--x,0) + 120vw), calc(var(--y,0) - 60vh)) scale(var(--s,1)); opacity:0}}
@@ -110,6 +94,7 @@
 </head>
 <body>
   <div class="sprite-layer" id="sprites"></div>
+
   <div class="hud">1 UP  25000</div>
   <div class="hud-right">2 UP  03200</div>
 
@@ -124,16 +109,10 @@
 
   <div class="hearts">♥ ♥ ♥</div>
 
-  <!-- Pixel sprites -->
-  <div class="sprite coin" style="top:80%; left:10%; animation-delay: 0s;"></div>
-  <div class="sprite rocket" style="top:90%; left:50%; animation-delay: 4s;"></div>
-  <div class="sprite coin" style="top:95%; left:75%; animation-delay: 8s;"></div>
-
   <!-- Pixel sprite templates -->
   <template id="tpl-coin">
     <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
       <rect width="16" height="16" fill="none"/>
-      <!-- simple pixel coin -->
       <rect x="5" y="2" width="6" height="12" fill="#ffde59"/>
       <rect x="4" y="3" width="8" height="10" fill="#ffd000"/>
       <rect x="6" y="5" width="4" height="6" fill="#ffb800"/>
@@ -144,16 +123,12 @@
   <template id="tpl-rocket">
     <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
       <rect width="16" height="16" fill="none"/>
-      <!-- body -->
       <rect x="7" y="4" width="4" height="6" fill="#9ad0ff"/>
       <rect x="6" y="5" width="1" height="4" fill="#ff3af2"/>
       <rect x="11" y="5" width="1" height="4" fill="#ff3af2"/>
-      <!-- nose -->
       <rect x="8" y="3" width="2" height="1" fill="#c7e6ff"/>
-      <!-- fins -->
       <rect x="6" y="8" width="1" height="2" fill="#a64dff"/>
       <rect x="11" y="8" width="1" height="2" fill="#a64dff"/>
-      <!-- flame -->
       <rect x="8" y="10" width="2" height="1" fill="#ffde59"/>
       <rect x="8" y="11" width="2" height="1" fill="#ff9a00"/>
     </svg>
@@ -169,19 +144,20 @@
     function spawn(kind){
       const el = document.createElement('div');
       el.className = 'sprite';
-      el.style.setProperty('--x', (-80 + Math.random()*40) + 'px');
-      el.style.setProperty('--y', (Math.random()*window.innerHeight*0.7 + 40) + 'px');
-      el.style.setProperty('--s', (0.8 + Math.random()*0.6));
-      el.style.animation = `driftUpRight ${12 + Math.random()*10}s linear forwards`;
+      // Spread out spawns more randomly across screen
+      el.style.setProperty('--x', (Math.random()*-200) + 'px');
+      el.style.setProperty('--y', (Math.random()*window.innerHeight*0.8 + 20) + 'px');
+      el.style.setProperty('--s', (0.7 + Math.random()*0.8));
+      el.style.animation = `driftUpRight ${15 + Math.random()*12}s linear forwards`;
       el.innerHTML = (kind==='coin'? tplCoin.content.cloneNode(true): tplRocket.content.cloneNode(true)).firstElementChild.outerHTML;
       layer.appendChild(el);
       el.addEventListener('animationend', ()=> el.remove());
     }
 
     // initial burst
-    for(let i=0;i<6;i++){ setTimeout(()=>spawn(Math.random()<0.6?'coin':'rocket'), i*400); }
-    // continuous
-    setInterval(()=> spawn(Math.random()<0.65?'coin':'rocket'), 1800);
+    for(let i=0;i<4;i++){ setTimeout(()=>spawn(Math.random()<0.6?'coin':'rocket'), i*600); }
+    // continuous with more spacing
+    setInterval(()=> spawn(Math.random()<0.65?'coin':'rocket'), 3000);
   })();
   </script>
 </body>
