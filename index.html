@@ -3,120 +3,186 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GBTW • Space Background (Arcade)</title>
+  <title>GBTW • Retro Arcade Theme</title>
   <style>
-    body{margin:0;height:100%;background:#05060b;overflow:hidden;font-family:sans-serif}
-    canvas#starfield{position:fixed;inset:0;display:block;z-index:0}
+    body {
+      margin: 0;
+      height: 100%;
+      background: #0c0c0f;
+      font-family: 'Press Start 2P', monospace;
+      color: #ffde59;
+      text-align: center;
+      overflow: hidden;
+    }
+    h1 {
+      font-size: 36px;
+      margin-top: 12%;
+      color: #ff3af2;
+      text-shadow: 3px 3px 0px #000, 0 0 12px #ff3af2;
+    }
+    h2 {
+      font-size: 20px;
+      color: #00e5ff;
+      text-shadow: 2px 2px 0px #000, 0 0 10px #00e5ff;
+    }
+    .btn {
+      display: inline-block;
+      border: 3px solid #ffde59;
+      color: #ffde59;
+      padding: 14px 24px;
+      margin: 20px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: transform .1s;
+      background: #1a1a20;
+      box-shadow: 0 0 12px #ffde59;
+    }
+    .btn:hover {
+      transform: scale(1.08);
+      background: #2a2a32;
+    }
+    .hud {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      font-size: 14px;
+      color: #a64dff;
+    }
+    .hud-right {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 14px;
+      color: #a64dff;
+    }
+    .hearts {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #ffde59;
+    }
+    /* CRT Scanline Overlay */
+    body:after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.05) 0px,
+        rgba(0,0,0,0.05) 2px
+      );
+      pointer-events: none;
+      mix-blend-mode: overlay;
+    }
 
-    /* Realistic-ish planets */
-    .planet{position:absolute;border-radius:50%;}
-    .planet.earth{width:220px;height:220px;top:10%;left:5%;background:radial-gradient(circle at 35% 30%, #8fd3ff 0%, #1b73c7 60%, #0c2e63 100%);
-      box-shadow: inset -20px -30px 60px rgba(0,0,0,.35), 0 0 30px rgba(90,170,255,.35);
-      animation: earthFloat 140s linear infinite;}
-    .planet.mars{width:180px;height:180px;bottom:10%;right:5%;background:radial-gradient(circle at 40% 30%, #ff9b6a 0%, #d4552a 55%, #6e2814 100%);
-      box-shadow: inset -18px -28px 50px rgba(0,0,0,.35), 0 0 26px rgba(255,120,80,.28);
-      animation: marsFloat 160s linear infinite;}
-    .planet.saturn{width:320px;height:320px;top:-8%;right:20%;background:radial-gradient(circle at 50% 40%, #fbe8b9 0%, #e3c47a 55%, #9b7a41 100%);
-      box-shadow: inset -22px -30px 64px rgba(0,0,0,.35), 0 0 34px rgba(250,225,160,.28);
-      animation: saturnFloat 180s linear infinite;}
-    .planet.saturn:before{content:"";position:absolute;left:-30px;right:-30px;top:46%;height:26px;border-radius:50%;background:linear-gradient(90deg, rgba(255,255,255,.2), rgba(230,190,120,.8), rgba(255,255,255,.2));transform:rotate(-12deg)}
-
-    @keyframes earthFloat{0%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}100%{transform:translate(0,0)}}
-    @keyframes marsFloat{0%{transform:translate(0,0)}50%{transform:translate(-20px,10px)}100%{transform:translate(0,0)}}
-    @keyframes saturnFloat{0%{transform:translate(0,0)}50%{transform:translate(30px,-10px)}100%{transform:translate(0,0)}}
-
-    /* Arrow and riders */
-    .arrow-riders{position:absolute;bottom:20%;left:-400px;width:800px;height:auto;animation:flyArrow 25s linear infinite;z-index:2}
-    @keyframes flyArrow{0%{transform:translateX(-400px) translateY(0)}100%{transform:translateX(120vw) translateY(-60px)}}
+    /* Animated pixel sprites */
+    .sprite {
+      position: absolute;
+      image-rendering: pixelated;
+      width: 40px;
+      height: 40px;
+      opacity: 0.85;
+      animation: float 12s linear infinite;
+    }
+    .sprite.coin {
+      background: radial-gradient(circle, #fff6a8 0%, #ffd64f 50%, #ff9a1a 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 10px #ffde59;
+    }
+    .sprite.rocket {
+      background: linear-gradient(to bottom, #ff3af2 0%, #ff512f 100%);
+      clip-path: polygon(50% 0%, 70% 40%, 70% 100%, 30% 100%, 30% 40%);
+      box-shadow: 0 0 8px #ff3af2;
+    }
+    @keyframes float {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      10% { opacity: 1; }
+      50% { transform: translateY(-200px) translateX(100px); opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-400px) translateX(200px); opacity: 0; }
+    }
+      /* === Animated pixel sprites === */
+    .sprite-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+    .sprite{position:absolute;will-change:transform,opacity;image-rendering:pixelated;filter:drop-shadow(0 0 6px rgba(255,255,255,.25))}
+    .sprite svg{width:48px;height:48px}
+    @keyframes driftUpRight{0%{transform:translate(var(--x,0), var(--y,0)) scale(var(--s,1)); opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(calc(var(--x,0) + 120vw), calc(var(--y,0) - 60vh)) scale(var(--s,1)); opacity:0}}
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-  <canvas id="starfield"></canvas>
+  <div class="sprite-layer" id="sprites"></div>
+  <div class="hud">1 UP  25000</div>
+  <div class="hud-right">2 UP  03200</div>
 
-  <!-- PLANETS -->
-  <div class="planet earth"></div>
-  <div class="planet mars"></div>
-  <div class="planet saturn"></div>
+  <h1>GBTW TOKEN</h1>
+  <h2>GET BACK TO WORK</h2>
 
-  <!-- Arrow with riders (Mordecai & Rigby in spacesuits — arcade SVG) -->
-  <svg class="arrow-riders" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#00ff95"/>
-        <stop offset="100%" stop-color="#00ffc8"/>
-      </linearGradient>
-      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="4" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
+  <div>
+    <a href="#" class="btn">BUY</a>
+    <a href="#" class="btn">CHART</a>
+    <a href="#" class="btn">TELEGRAM</a>
+  </div>
 
-    <!-- green arrow line -->
-    <g filter="url(#glow)">
-      <polyline points="10,350 120,300 240,330 360,250 480,280 580,180" fill="none" stroke="url(#grad)" stroke-width="12" />
-      <polygon points="580,180 560,190 585,210 600,160" fill="#00ffc8" />
-    </g>
+  <div class="hearts">♥ ♥ ♥</div>
 
-    <!-- Riders group follows the arrow tip -->
-    <g id="riders" transform="translate(455,225)" style="animation: bob 2.8s ease-in-out infinite alternate">
-      <!-- Mordecai-inspired (blue jay) with space suit/helmet -->
-      <g transform="translate(-40,-40) scale(0.9)">
-        <!-- helmet -->
-        <circle cx="34" cy="-8" r="36" fill="rgba(255,255,255,.08)" stroke="#9cc9ff" stroke-width="3"/>
-        <circle cx="34" cy="-8" r="34" fill="rgba(156,201,255,.07)" />
-        <!-- head/body -->
-        <ellipse cx="34" cy="0" rx="22" ry="30" fill="#58a9ff" stroke="#1b2b5a" stroke-width="4"/>
-        <!-- beak -->
-        <path d="M52 -6 l 22 6 l -22 6 z" fill="#1b2b5a"/>
-        <!-- suit -->
-        <rect x="16" y="22" width="36" height="34" rx="8" fill="#e9f2ff" stroke="#7a8bb0" stroke-width="3"/>
-        <rect x="20" y="28" width="28" height="8" rx="4" fill="#a6b8ff"/>
-        <rect x="20" y="40" width="28" height="8" rx="4" fill="#c7d3ff"/>
-        <!-- hand on arrow -->
-        <circle cx="56" cy="42" r="6" fill="#e9f2ff" stroke="#7a8bb0" stroke-width="3"/>
-      </g>
+  <!-- Pixel sprites -->
+  <div class="sprite coin" style="top:80%; left:10%; animation-delay: 0s;"></div>
+  <div class="sprite rocket" style="top:90%; left:50%; animation-delay: 4s;"></div>
+  <div class="sprite coin" style="top:95%; left:75%; animation-delay: 8s;"></div>
 
-      <!-- Rigby-inspired (raccoon) with space suit/helmet -->
-      <g transform="translate(26,0) scale(1)">
-        <!-- helmet -->
-        <circle cx="14" cy="-4" r="32" fill="rgba(255,255,255,.08)" stroke="#c9d5ff" stroke-width="3"/>
-        <circle cx="14" cy="-4" r="30" fill="rgba(201,213,255,.07)" />
-        <!-- head/body -->
-        <ellipse cx="14" cy="6" rx="20" ry="24" fill="#b68452" stroke="#3b2a19" stroke-width="4"/>
-        <!-- eyes -->
-        <circle cx="6" cy="0" r="6" fill="#0a1433" stroke="#6a4a2e" stroke-width="3"/>
-        <circle cx="20" cy="0" r="6" fill="#0a1433" stroke="#6a4a2e" stroke-width="3"/>
-        <!-- smile -->
-        <path d="M4 10 q 10 8 20 0" fill="#ff4b6e" stroke="#3b2a19" stroke-width="3"/>
-        <!-- suit pack -->
-        <rect x="-4" y="24" width="36" height="26" rx="7" fill="#eef3ff" stroke="#7a8bb0" stroke-width="3"/>
-        <rect x="0" y="28" width="24" height="8" rx="4" fill="#a6b8ff"/>
-        <!-- tail (outside helmet) -->
-        <path d="M28 12 q 24 16 36 -4 q -6 22 -28 14" fill="#b68452" stroke="#3b2a19" stroke-width="4"/>
-      </g>
-    </g>
-  </svg>
+  <!-- Pixel sprite templates -->
+  <template id="tpl-coin">
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <rect width="16" height="16" fill="none"/>
+      <!-- simple pixel coin -->
+      <rect x="5" y="2" width="6" height="12" fill="#ffde59"/>
+      <rect x="4" y="3" width="8" height="10" fill="#ffd000"/>
+      <rect x="6" y="5" width="4" height="6" fill="#ffb800"/>
+      <rect x="7" y="6" width="2" height="4" fill="#ff9a00"/>
+      <rect x="4" y="3" width="8" height="1" fill="#fff3b0"/>
+    </svg>
+  </template>
+  <template id="tpl-rocket">
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <rect width="16" height="16" fill="none"/>
+      <!-- body -->
+      <rect x="7" y="4" width="4" height="6" fill="#9ad0ff"/>
+      <rect x="6" y="5" width="1" height="4" fill="#ff3af2"/>
+      <rect x="11" y="5" width="1" height="4" fill="#ff3af2"/>
+      <!-- nose -->
+      <rect x="8" y="3" width="2" height="1" fill="#c7e6ff"/>
+      <!-- fins -->
+      <rect x="6" y="8" width="1" height="2" fill="#a64dff"/>
+      <rect x="11" y="8" width="1" height="2" fill="#a64dff"/>
+      <!-- flame -->
+      <rect x="8" y="10" width="2" height="1" fill="#ffde59"/>
+      <rect x="8" y="11" width="2" height="1" fill="#ff9a00"/>
+    </svg>
+  </template>
 
-  <style>
-    @keyframes bob{from{transform:translate(455px,225px) translateY(-6px)} to{transform:translate(455px,225px) translateY(8px)}}
-  </style>
+  <script>
+  // === Sprite spawner ===
+  (function(){
+    const layer = document.getElementById('sprites');
+    const tplCoin = document.getElementById('tpl-coin');
+    const tplRocket = document.getElementById('tpl-rocket');
 
-<script>
-// ===== Starfield =====
-(function(){
-  const canvas=document.getElementById('starfield');
-  const ctx=canvas.getContext('2d');
-  let w,h,dpr=Math.min(window.devicePixelRatio||1,2);
-  function resize(){w=canvas.width=Math.floor(innerWidth*dpr);h=canvas.height=Math.floor(innerHeight*dpr);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px'}
-  window.addEventListener('resize',resize,{passive:true});resize();
+    function spawn(kind){
+      const el = document.createElement('div');
+      el.className = 'sprite';
+      el.style.setProperty('--x', (-80 + Math.random()*40) + 'px');
+      el.style.setProperty('--y', (Math.random()*window.innerHeight*0.7 + 40) + 'px');
+      el.style.setProperty('--s', (0.8 + Math.random()*0.6));
+      el.style.animation = `driftUpRight ${12 + Math.random()*10}s linear forwards`;
+      el.innerHTML = (kind==='coin'? tplCoin.content.cloneNode(true): tplRocket.content.cloneNode(true)).firstElementChild.outerHTML;
+      layer.appendChild(el);
+      el.addEventListener('animationend', ()=> el.remove());
+    }
 
-  const STAR_LAYERS=[{count:120,speed:0.02,size:1,alpha:0.9},{count:180,speed:0.05,size:0.9,alpha:0.7},{count:240,speed:0.09,size:0.8,alpha:0.55}];
-  let stars=[];function init(){stars.length=0;STAR_LAYERS.forEach((L,li)=>{for(let i=0;i<L.count;i++){stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*1+0.2+li*0.2,s:L.size,a:L.alpha,sp:L.speed*(0.6+Math.random()*0.8)})}})}
-  init();
-
-  function tick(){ctx.clearRect(0,0,w,h);for(const st of stars){st.x+=st.sp*dpr*1.4;st.y-=st.sp*dpr*0.2;if(st.x>w+4||st.y<-4){st.x=-4;st.y=Math.random()*h}const sz=st.s*dpr*(0.6+st.z*0.8);ctx.globalAlpha=st.a*(0.6+st.z*0.6);ctx.fillStyle='#cfe6ff';ctx.fillRect(st.x,st.y,sz,sz)}ctx.globalAlpha=1;requestAnimationFrame(tick)}
-  requestAnimationFrame(tick);
-})();
-</script>
+    // initial burst
+    for(let i=0;i<6;i++){ setTimeout(()=>spawn(Math.random()<0.6?'coin':'rocket'), i*400); }
+    // continuous
+    setInterval(()=> spawn(Math.random()<0.65?'coin':'rocket'), 1800);
+  })();
+  </script>
 </body>
 </html>
