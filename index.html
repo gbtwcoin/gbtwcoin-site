@@ -6,132 +6,202 @@
   <title>GBTW • Get Back To Work</title>
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    :root{--gold:#ffde59;--bg:#05060b}
-    body{margin:0;background:var(--bg);color:#fff;font-family:'Press Start 2P',monospace;text-align:center;overflow-x:hidden;}
-    header{padding:40px 20px;position:relative;z-index:2}
-    header h1{font-family:'Press Start 2P',monospace;text-align:center;font-size:clamp(48px,9vw,100px);margin:0;letter-spacing:4px;line-height:1;position:relative;z-index:var(--ui-z);
-  color:#ff4da6; /* retro pink */
-  text-shadow:3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff, 6px 6px 0 #6b2cff, 0 0 18px rgba(255,77,166,.6);
-}
-/* Use gradient only when background-clip:text is supported */
-@supports ((-webkit-background-clip:text) or (background-clip:text)){
-  header h1{
-    background:linear-gradient(180deg,#ff76e0 0%,#ff7f3a 55%,#ffa63a 100%);
-    -webkit-background-clip:text; background-clip:text; 
-    color:transparent; -webkit-text-fill-color:transparent;
-    -webkit-text-stroke:6px #ffffff;
-  }
-}
-    header p.tag{font-family:'Press Start 2P',monospace;font-size:18px;margin:14px 0 28px;color:#ffe35c;text-shadow:2px 2px 0 #000,0 0 12px #ffe35c;letter-spacing:2px;text-transform:uppercase}
-    section{padding:40px 20px;max-width:900px;margin:0 auto;text-align:left;position:relative;z-index:2}
-    section.panel{background:linear-gradient(180deg,rgba(18,18,28,.85),rgba(12,12,20,.75));border:3px solid rgba(255,255,255,.18);border-radius:18px;box-shadow:0 14px 36px rgba(0,0,0,.6), inset 0 0 0 4px rgba(0,0,0,.35);padding:26px;margin:22px 0}
+    :root{
+      --ui-z:3;        /* content */
+      --sprites-z:1;   /* coins & rockets */
+      --stars-z:0;     /* starfield */
+      --overlay-z:4;   /* scanlines */
+      --accent:#ff3af2; --cyan:#00e5ff; --gold:#ffde59; --bg:#05060b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:#fff;font-family:'Press Start 2P',monospace;text-align:center;overflow-x:hidden}
+
+    /* FX layers */
+    canvas#starfield{position:fixed;inset:0;z-index:var(--stars-z);pointer-events:none;display:block}
+    .sprite-layer{position:fixed;inset:0;z-index:var(--sprites-z);pointer-events:none;overflow:visible}
+    .sprite{position:absolute;will-change:transform,opacity;image-rendering:pixelated;filter:drop-shadow(0 0 6px rgba(255,255,255,.25))}
+    .sprite svg{width:48px;height:48px}
+
+    /* HUD */
+    .hud{position:fixed;top:10px;left:16px;z-index:var(--ui-z);color:#a64dff;font-size:12px;letter-spacing:1px;text-shadow:2px 2px 0 #000}
+    .hud.right{left:auto;right:16px}
+
+    /* Layout */
+    header{padding:80px 20px 20px;position:relative;z-index:var(--ui-z)}
+    .container{position:relative;z-index:var(--ui-z);max-width:980px;width:min(94vw,980px);margin:0 auto;padding:10px 16px 80px;text-align:center}
+    section.panel{background:linear-gradient(180deg,rgba(18,18,28,.85),rgba(12,12,20,.75));border:3px solid rgba(255,255,255,.18);border-radius:18px;box-shadow:0 14px 36px rgba(0,0,0,.6), inset 0 0 0 4px rgba(0,0,0,.35);padding:26px;margin:22px auto;text-align:left}
+
+    /* Title & tagline */
+    header h1{font-family:'Press Start 2P',monospace;text-align:center;font-size:clamp(48px,9vw,100px);margin:0;letter-spacing:2px;line-height:1.05;position:relative;z-index:var(--ui-z);
+      color:#ff4da6; /* retro pink */
+      text-shadow:3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff, 6px 6px 0 #6b2cff, 0 0 18px rgba(255,77,166,.6);
+      -webkit-text-stroke: 2px #ffffff; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+    }
+    header p.tag{font-size:18px;margin:14px 0 28px;color:#ffe35c;text-shadow:2px 2px 0 #000,0 0 12px #ffe35c;letter-spacing:2px;text-transform:uppercase}
+
+    /* Buttons */
+    .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:14px 0 6px}
+    .btn{border:3px solid var(--gold);color:#fff;padding:12px 18px;background:#1a1a20;box-shadow:0 0 22px var(--gold), inset 0 -6px 0 #704c00, 0 0 0 rgba(255,222,89,0);text-decoration:none;text-transform:uppercase;border-radius:10px;letter-spacing:1px;font-size:16px;text-shadow:2px 2px 4px #000;position:relative;animation:btnPulseArcade 1.3s ease-in-out infinite alternate}
+    .btn:before{content:"";position:absolute;inset:0;border-radius:8px;box-shadow:0 0 30px rgba(255,222,89,.9),0 0 90px rgba(255,222,89,.45);opacity:.85;pointer-events:none}
+    .btn:hover{transform:translateY(-2px) scale(1.03);background:#2a2a32}
+    @keyframes btnPulseArcade{0%{filter:brightness(1);box-shadow:0 0 20px var(--gold),0 0 40px rgba(255,222,89,.3), inset 0 -6px 0 #704c00}100%{filter:brightness(1.2);box-shadow:0 0 40px var(--gold),0 0 100px rgba(255,222,89,.6), inset 0 -3px 0 #704c00}}
+
+    /* Text */
     h2{font-family:'Press Start 2P',monospace;font-size:24px;margin:0 0 16px;color:#ffe35c;text-shadow:3px 3px 0 #000,0 0 10px #a64dff;letter-spacing:1px}
     p{font-size:13px;line-height:1.9;color:#f3f3f3;text-shadow:1px 1px 3px #000}
     ol{font-size:13px;line-height:2;color:#f3f3f3;padding-left:22px;text-shadow:1px 1px 3px #000}
-    iframe.chart{width:100%;height:min(70vh,560px);border:0;border-radius:12px;background:#0e0e16;box-shadow:0 10px 30px rgba(0,0,0,.55)}
     .links a{display:block;margin:10px 0;font-size:13px;color:#00ffc8;text-decoration:none;text-shadow:1px 1px 2px #000}
-    footer{padding:40px 20px;font-size:12px;color:#aaa;background:#0b0c12;margin-top:40px;position:relative;z-index:2}
-    .btn{border:3px solid var(--gold);color:#fff;padding:12px 18px;background:#1a1a20;box-shadow:0 0 24px var(--gold), inset 0 -6px 0 #704c00;text-decoration:none;text-transform:uppercase;border-radius:10px;letter-spacing:1px;font-size:16px;text-shadow:2px 2px 4px #000;position:relative;animation:btnPulse 1.6s ease-in-out infinite alternate}
-    .btn:before{content:"";position:absolute;inset:0;border-radius:8px;box-shadow:0 0 28px rgba(255,222,89,.85),0 0 60px rgba(255,222,89,.45);opacity:.8;pointer-events:none}
-    .btn:hover{transform:translateY(-2px) scale(1.03);background:#2a2a32}
-    @keyframes btnPulse{0%{box-shadow:0 0 18px var(--gold), inset 0 -6px 0 #704c00;filter:brightness(1)}100%{box-shadow:0 0 36px var(--gold),0 0 70px rgba(255,222,89,.55), inset 0 -3px 0 #704c00;filter:brightness(1.2)}}
-    /* background layers */
-    #stars{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:0}
-    #sprites{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
-    .sprite{position:absolute;font-size:22px;}
-    @keyframes wander{0%{transform:translate(var(--x),var(--y)) scale(var(--s)) rotate(var(--ang));opacity:0}8%{opacity:1}50%{transform:translate(calc(var(--x) + var(--dx)*.5),calc(var(--y) + var(--dy)*.5)) scale(var(--s)) rotate(var(--ang))}100%{transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy))) scale(var(--s)) rotate(var(--ang));opacity:0}}
-  /* --- Glow boost overrides --- */
-.btn{animation:btnPulseArcade 1.3s ease-in-out infinite alternate;box-shadow:0 0 22px var(--gold),0 0 60px rgba(255,222,89,.35), inset 0 -6px 0 #704c00}
-.btn:before{box-shadow:0 0 30px rgba(255,222,89,.9),0 0 90px rgba(255,222,89,.45);opacity:.85}
-@keyframes btnPulseArcade{0%{filter:brightness(1);box-shadow:0 0 20px var(--gold),0 0 40px rgba(255,222,89,.3), inset 0 -6px 0 #704c00}100%{filter:brightness(1.2);box-shadow:0 0 40px var(--gold),0 0 100px rgba(255,222,89,.6), inset 0 -3px 0 #704c00}}
-/* layout centering overrides */
-.container{max-width:980px;width:min(94vw,980px);margin:0 auto;text-align:center}
-section.panel{margin:22px auto;text-align:left}
-</style>
+
+    /* Chart */
+    iframe.chart{width:100%;height:min(70vh,560px);border:0;border-radius:12px;background:#0e0e16;box-shadow:0 10px 30px rgba(0,0,0,.55)}
+
+    /* Scanlines */
+    body:after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.03) 0px,rgba(0,0,0,.07) 2px);mix-blend-mode:overlay;pointer-events:none;z-index:var(--overlay-z)}
+
+    @media (max-width:600px){header{padding-top:64px}header p.tag{font-size:16px}}
+  </style>
 </head>
 <body>
   <!-- Arcade HUD -->
-  <div style="position:fixed;top:10px;left:16px;z-index:3;color:#a64dff;font-family:'Press Start 2P',monospace;font-size:12px;letter-spacing:1px;text-shadow:2px 2px 0 #000">1 UP&nbsp;&nbsp;25000</div>
-  <div style="position:fixed;top:10px;right:16px;z-index:3;color:#a64dff;font-family:'Press Start 2P',monospace;font-size:12px;letter-spacing:1px;text-shadow:2px 2px 0 #000">2 UP&nbsp;&nbsp;003200</div>
+  <div class="hud">1 UP&nbsp;&nbsp;25000</div>
+  <div class="hud right">2 UP&nbsp;&nbsp;003200</div>
 
-  <div id="stars"></div>
-  <div id="sprites"></div>
+  <!-- FX layers behind content -->
+  <canvas id="starfield"></canvas>
+  <div class="sprite-layer" id="sprites" aria-hidden="true"></div>
 
+  <!-- HERO -->
   <header>
     <h1>GBTW</h1>
     <p class="tag">Punch In. Punch Out. Get Back To Work!</p>
+    <div class="cta-row">
+      <a id="buyLink" class="btn" target="_blank" rel="noopener">Buy on Pump.fun</a>
+      <a id="chartLink" class="btn" target="_blank" rel="noopener">Live Chart</a>
+    </div>
   </header>
 
-  <section class="panel" id="about">
-    <h2>About</h2>
-    <p>This project is inspired by the CN show, <strong>Regular Show</strong>. It’s something I always loved watching growing up and many others did too. For those who are familiar with it, you know it was sadly discontinued. So my plan is to introduce it into the world of crypto! With profits gained from this token, this project is willing to give back to communities, charities and small streamers who play video games! Everything will be transparent so follow our socials and stay tuned!</p>
-  </section>
+  <main class="container">
+    <!-- ABOUT -->
+    <section class="panel" id="about">
+      <h2>About</h2>
+      <p>This project is inspired by the CN show, Regular Show. Its something I always loved watching growing up and many others. For the ones who are familiar with it know that it was sadly discontinued, so my plan is to introduce it into the world of crypto! With profits gained from this token this project is willing to give back to communities, charities and small streamers who play video games! Everything will be transparent so follow our socials and stayed tuned!</p>
+    </section>
 
-  <section class="panel" id="howtobuy">
-    <h2>How to Buy</h2>
-    <ol>
-      <li>Go to the official <strong>Pump.fun</strong> page for GBTW.</li>
-      <li>Connect your wallet (Phantom or MetaMask depending on chain).</li>
-      <li>Enter how much you want to buy and confirm the transaction.</li>
-      <li>That’s it! You now hold GBTW. 🎉</li>
-    </ol>
-  </section>
+    <!-- HOW TO BUY (Pump.fun) -->
+    <section class="panel" id="howtobuy">
+      <h2>How to Buy (Pump.fun)</h2>
+      <ol>
+        <li>Click <strong>Buy on Pump.fun</strong> above to open the token page.</li>
+        <li>Connect your wallet (Phantom for Solana; MetaMask if EVM is supported).</li>
+        <li>Enter the amount and confirm. Start small to test, then scale.</li>
+        <li>If a buy fails, try a small slippage (e.g., 1–3%).</li>
+        <li>After graduation to a DEX pair, you can also trade via the Live Chart link.</li>
+      </ol>
+    </section>
 
-  <section class="panel" id="chart">
-    <h2>Live Chart</h2>
-    <iframe class="chart" src="https://dexscreener.com" allowfullscreen></iframe>
-  </section>
+    <!-- LIVE CHART (Dexscreener embed) -->
+    <section class="panel" id="chart">
+      <h2>Live Chart</h2>
+      <iframe id="dsFrame" class="chart" src="" allowfullscreen></iframe>
+    </section>
 
-  <section class="panel" id="links">
-    <h2>Official Links</h2>
-    <div class="links">
-      <a href="https://t.me/gbtwomafia" target="_blank">Telegram</a>
-      <a href="https://x.com/GBTWcoin" target="_blank">Twitter / X</a>
-    </div>
-  </section>
+    <!-- OFFICIAL LINKS -->
+    <section class="panel" id="links">
+      <h2>Official Links</h2>
+      <div class="links">
+        <a id="tgLink" href="https://t.me/gbtwomafia" target="_blank" rel="noopener">Telegram</a>
+        <a id="twLink" href="https://x.com/GBTWcoin" target="_blank" rel="noopener">Twitter / X</a>
+      </div>
+    </section>
+  </main>
 
-  <footer>
-    <p>Disclaimer: GBTW has no association with Cartoon Network, Regular Show, or the creation of its characters. We’re simply paying homage to a show many of us around the world loved! For informational and entertainment purposes only.</p>
+  <footer style="position:relative;z-index:var(--ui-z);padding:40px 16px 80px;color:#e0e0e0;font:15px/1.8 system-ui;text-align:center;text-shadow:1px 1px 3px #000">
+    <p><strong>Disclaimer:</strong> gbtw has no association with the CN/regular show or the creation of the following characters. were simply paying homage to a show plenty of us around the world loved! for informational and entertainment purposes only</p>
     <p>© GBTW 2025</p>
   </footer>
 
-  <script>
-    const starLayer=document.getElementById('stars');
-    for(let i=0;i<120;i++){
-      const s=document.createElement('div');
-      s.style.position='absolute';
-      s.style.width=s.style.height=Math.random()*2+1+'px';
-      s.style.background='#fff';
-      s.style.left=Math.random()*100+'%';
-      s.style.top=Math.random()*100+'%';
-      s.style.opacity=Math.random();
-      starLayer.appendChild(s);
-    }
+  <!-- Pixel sprite templates (coins + rockets) -->
+  <template id="tpl-coin">
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="16" height="16" fill="none"/>
+      <rect x="5" y="2" width="6" height="12" fill="#ffde59"/>
+      <rect x="4" y="3" width="8" height="10" fill="#ffd000"/>
+      <rect x="6" y="5" width="4" height="6" fill="#ffb800"/>
+      <rect x="7" y="6" width="2" height="4" fill="#ff9a00"/>
+      <rect x="4" y="3" width="8" height="1" fill="#fff3b0"/>
+    </svg>
+  </template>
+  <template id="tpl-rocket">
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="16" height="16" fill="none"/>
+      <rect x="7" y="4" width="4" height="6" fill="#9ad0ff"/>
+      <rect x="6" y="5" width="1" height="4" fill="#ff3af2"/>
+      <rect x="11" y="5" width="1" height="4" fill="#ff3af2"/>
+      <rect x="8" y="3" width="2" height="1" fill="#c7e6ff"/>
+      <rect x="6" y="8" width="1" height="2" fill="#a64dff"/>
+      <rect x="11" y="8" width="1" height="2" fill="#a64dff"/>
+      <rect x="8" y="10" width="2" height="1" fill="#ffde59"/>
+      <rect x="8" y="11" width="2" height="1" fill="#ff9a00"/>
+    </svg>
+  </template>
 
+  <script>
+  // ===== Starfield (all directions, behind content) =====
+  (function(){
+    const c=document.getElementById('starfield');
+    const ctx=c.getContext('2d');
+    let w,h; function resize(){w=c.width=innerWidth; h=c.height=innerHeight} addEventListener('resize',resize,{passive:true}); resize();
+    const stars=Array.from({length:280},()=>({x:Math.random()*w,y:Math.random()*h,s:1+Math.random()*1.6,dx:(Math.random()-0.5)*0.35,dy:(Math.random()-0.5)*0.35,a:0.7+Math.random()*0.3}));
+    (function tick(){ctx.clearRect(0,0,w,h);for(const s of stars){ctx.globalAlpha=s.a;ctx.fillStyle='#cfe6ff';ctx.fillRect(s.x,s.y,s.s,s.s);s.x+=s.dx;s.y+=s.dy;if(s.x<0)s.x=w;if(s.x>w)s.x=0;if(s.y<0)s.y=h;if(s.y>h)s.y=0;}ctx.globalAlpha=1;requestAnimationFrame(tick);})();
+  })();
+
+  // ===== Pixel Sprites (coins & rockets wandering in all directions; rockets rotate to vector) =====
+  (function(){
     const layer=document.getElementById('sprites');
-    const tplRocket=document.createElement('template');
-    tplRocket.innerHTML='<span style="display:inline-block">🚀</span>';
-    const tplCoin=document.createElement('template');
-    tplCoin.innerHTML='<span style="display:inline-block">🪙</span>';
+    const tplCoin=document.getElementById('tpl-coin');
+    const tplRocket=document.getElementById('tpl-rocket');
 
     function spawn(kind){
       const el=document.createElement('div'); el.className='sprite';
       const startX=(Math.random()*120-10)+'vw';
       const startY=(Math.random()*120-10)+'vh';
       el.style.setProperty('--x', startX); el.style.setProperty('--y', startY);
-      const dxVal=(Math.random()*160-80);
-      const dyVal=(Math.random()*120-60);
+      const dxVal=(Math.random()*160-80); // vw delta
+      const dyVal=(Math.random()*120-60); // vh delta
       el.style.setProperty('--dx', dxVal+'vw');
       el.style.setProperty('--dy', dyVal+'vh');
-      const angle=Math.atan2(dyVal, dxVal) * 180/Math.PI;
-      el.style.setProperty('--ang', (kind==='rocket'? angle+'deg':'0deg'));
+      const angle=Math.atan2(dyVal, dxVal) * 180/Math.PI; // deg
+      el.style.setProperty('--ang', (kind==='rocket' ? angle+'deg' : '0deg'));
       el.style.setProperty('--s', (0.8+Math.random()*0.8));
       const dur=12+Math.random()*14; el.style.animation=`wander ${dur}s linear forwards`;
       el.innerHTML=(kind==='coin'? tplCoin : tplRocket).content.firstElementChild.outerHTML;
       layer.appendChild(el);
       el.addEventListener('animationend',()=>el.remove());
     }
-    setInterval(()=>spawn(Math.random()<0.5?'coin':'rocket'),1200);
+
+    // Inject keyframes for movement once
+    const css=`@keyframes wander{0%{transform:translate(var(--x),var(--y)) scale(var(--s)) rotate(var(--ang));opacity:0}8%{opacity:1}50%{transform:translate(calc(var(--x) + var(--dx)*.5),calc(var(--y) + var(--dy)*.5)) scale(var(--s)) rotate(var(--ang))}100%{transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy))) scale(var(--s)) rotate(var(--ang));opacity:0}}`;
+    const style=document.createElement('style'); style.textContent=css; document.head.appendChild(style);
+
+    // Initial scatter
+    for(let i=0;i<6;i++){ setTimeout(()=>spawn(Math.random()<0.6?'coin':'rocket'), i*450); }
+    // Continuous trickle
+    setInterval(()=> spawn(Math.random()<0.65?'coin':'rocket'), 3200);
+  })();
+
+  // ===== Wire links (set these when live) =====
+  (function(){
+    const PUMPFUN_URL = 'https://pump.fun/your-token';
+    const DEXSCREENER = 'https://dexscreener.com/yourpath'; // token or pair URL
+    const buy=document.getElementById('buyLink');
+    const chart=document.getElementById('chartLink');
+    const ds=document.getElementById('dsFrame');
+
+    if(buy)   buy.href = PUMPFUN_URL;
+    if(chart) chart.href = DEXSCREENER;
+    if(ds)    ds.src = DEXSCREENER + (DEXSCREENER.includes('?')?'&':'?') + 'embed=1&theme=dark';
+  })();
   </script>
 </body>
 </html>
