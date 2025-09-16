@@ -9,8 +9,13 @@
     :root{--gold:#ffde59;--bg:#05060b}
     body{margin:0;background:var(--bg);color:#fff;font-family:'Press Start 2P',monospace;text-align:center;overflow-x:hidden;}
     header{padding:40px 20px;position:relative;z-index:2}
-    header h1{font-family:'Bangers',cursive;font-size:96px;margin:0;letter-spacing:6px;color:#ffe35c;text-shadow:4px 4px 0 #000,0 0 18px #ff3af2,0 0 28px #ff3af2}
-    header p.tag{font-size:22px;margin:12px 0 26px;color:#ff3af2;text-shadow:2px 2px 0 #000,0 0 10px #ff3af2;letter-spacing:1.5px}
+    header h1{font-family:'Bangers',cursive;font-size:108px;margin:0;letter-spacing:6px;line-height:1; /* retro layered outline like the reference */
+  color:#ff5ad1;
+  background:linear-gradient(180deg,#ff76e0 0%,#ff7f3a 55%,#ffa63a 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow: /* white hard outline */ 3px 3px 0 #ffffff,-3px 3px 0 #ffffff,3px -3px 0 #ffffff,-3px -3px 0 #ffffff, /* purple drop */ 6px 6px 0 #6b2cff, 0 0 24px rgba(255,90,209,.6);
+}
+    header p.tag{font-family:'Press Start 2P',monospace;font-size:18px;margin:14px 0 28px;color:#ffe35c;text-shadow:2px 2px 0 #000,0 0 12px #ffe35c;letter-spacing:2px;text-transform:uppercase}
     section{padding:40px 20px;max-width:900px;margin:0 auto;text-align:left;position:relative;z-index:2}
     section.panel{background:linear-gradient(180deg,rgba(18,18,28,.85),rgba(12,12,20,.75));border:3px solid rgba(255,255,255,.18);border-radius:18px;box-shadow:0 14px 36px rgba(0,0,0,.6), inset 0 0 0 4px rgba(0,0,0,.35);padding:26px;margin:22px 0}
     h2{font-family:'Press Start 2P',monospace;font-size:24px;margin:0 0 16px;color:#ffe35c;text-shadow:3px 3px 0 #000,0 0 10px #a64dff;letter-spacing:1px}
@@ -32,6 +37,9 @@
 .btn{animation:btnPulseArcade 1.3s ease-in-out infinite alternate;box-shadow:0 0 22px var(--gold),0 0 60px rgba(255,222,89,.35), inset 0 -6px 0 #704c00}
 .btn:before{box-shadow:0 0 30px rgba(255,222,89,.9),0 0 90px rgba(255,222,89,.45);opacity:.85}
 @keyframes btnPulseArcade{0%{filter:brightness(1);box-shadow:0 0 20px var(--gold),0 0 40px rgba(255,222,89,.3), inset 0 -6px 0 #704c00}100%{filter:brightness(1.2);box-shadow:0 0 40px var(--gold),0 0 100px rgba(255,222,89,.6), inset 0 -3px 0 #704c00}}
+/* layout centering overrides */
+.container{max-width:980px;width:min(94vw,980px);margin:0 auto;text-align:center}
+section.panel{margin:22px auto;text-align:left}
 </style>
 </head>
 <body>
