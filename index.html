@@ -9,12 +9,9 @@
     :root{--gold:#ffde59;--bg:#05060b}
     body{margin:0;background:var(--bg);color:#fff;font-family:'Press Start 2P',monospace;text-align:center;overflow-x:hidden;}
     header{padding:40px 20px;position:relative;z-index:2}
-    header h1{font-family:'Bangers',cursive;text-align:center;font-size:clamp(64px,10vw,120px);margin:0;letter-spacing:6px;line-height:1;position:relative;z-index:var(--ui-z);
-  /* Fallback fill so the title is always visible */
-  color:#ffffff; 
-  /* Bold outline + drop */
-  -webkit-text-stroke:6px #ffffff; paint-order:stroke fill; 
-  text-shadow:6px 6px 0 #6b2cff, 0 0 24px rgba(107,44,255,.55);
+    header h1{font-family:'Press Start 2P',monospace;text-align:center;font-size:clamp(48px,9vw,100px);margin:0;letter-spacing:4px;line-height:1;position:relative;z-index:var(--ui-z);
+  color:#ff4da6; /* retro pink */
+  text-shadow:3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff, 6px 6px 0 #6b2cff, 0 0 18px rgba(255,77,166,.6);
 }
 /* Use gradient only when background-clip:text is supported */
 @supports ((-webkit-background-clip:text) or (background-clip:text)){
