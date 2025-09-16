@@ -1,89 +1,197 @@
-<!-- HERO -->
-<header>
-  <!-- You can swap this H1 for your SVG logo later -->
-  <h1 style="margin-bottom:6px">GBTW</h1>
-  <p class="tag">Punch In. Punch Out. Get Back To Work!</p>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GBTW • Get Back To Work</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ui-z:3;        /* all content panels */
+      --sprites-z:1;   /* coins/rockets */
+      --stars-z:0;     /* starfield */
+      --overlay-z:4;   /* CRT scanlines (optional) */
+      --accent:#ff3af2; --cyan:#00e5ff; --gold:#ffde59; --bg:#05060b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:#fff;font-family:'Bangers',sans-serif;text-align:center;overflow-x:hidden}
 
-  <div class="cta-row">
-    <a id="buyLink" class="btn" target="_blank" rel="noopener">Buy on Pump.fun</a>
-    <a id="chartLink" class="btn" target="_blank" rel="noopener">Live Chart</a>
-  </div>
-</header>
+    /* FX layers */
+    canvas#starfield{position:fixed;inset:0;z-index:var(--stars-z);pointer-events:none;display:block}
+    .sprite-layer{position:fixed;inset:0;z-index:var(--sprites-z);pointer-events:none;overflow:visible}
+    .sprite{position:absolute;will-change:transform,opacity;image-rendering:pixelated;filter:drop-shadow(0 0 6px rgba(255,255,255,.25))}
+    .sprite svg{width:48px;height:48px}
 
-<main class="container">
-  <!-- ABOUT -->
-  <section class="panel" id="about">
-    <h3>About GBTW</h3>
-    <p>
-      This project is inspired by the CN show, Regular Show. It’s something I always loved watching growing up—same for many others.
-      Because it was sadly discontinued, my plan is to introduce that energy into the world of crypto!
-      With profits gained from this token, this project is willing to give back to communities, charities, and small streamers who play video games!
-      Everything will be transparent—follow our socials and stay tuned!
-    </p>
-  </section>
+    /* Page structure */
+    header{padding:80px 20px 20px;position:relative;z-index:var(--ui-z)}
+    header h1{font-size:80px;margin:0;letter-spacing:4px;color:var(--accent);text-shadow:3px 3px 0 #000,0 0 12px var(--accent)}
+    header p.tag{font-size:24px;margin:12px 0 26px;color:var(--cyan);text-shadow:2px 2px 0 #000,0 0 10px var(--cyan)}
 
-  <!-- HOW TO BUY (PUMPFUN) -->
-  <section class="panel how" id="howtobuy">
-    <h3>How to Buy (Pump.fun)</h3>
-    <ol>
-      <li>Click <strong>Buy on Pump.fun</strong> (button above) to open the token page.</li>
-      <li>Connect your wallet (Phantom for Solana, MetaMask for EVM if supported).</li>
-      <li>Enter the amount and confirm the transaction. Start small to test, then scale.</li>
-      <li>If a buy fails, try a small slippage (e.g., 1–3%).</li>
-      <li>After graduation to a DEX pair, you can also trade via the Live Chart link.</li>
-    </ol>
-  </section>
+    .container{position:relative;z-index:var(--ui-z);max-width:980px;margin:0 auto;padding:10px 16px 80px;text-align:left}
+    section.panel{background:rgba(16,16,28,.55);border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:22px;margin:18px 0}
+    h2{font-size:32px;margin:0 0 16px;color:var(--accent)}
+    p,ol,li,a{font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
+    p{font-size:16px;line-height:1.75;color:#e7e7e7}
+    ol{font-size:16px;line-height:1.85;color:#e7e7e7;padding-left:22px}
+    .links a{display:block;margin:8px 0;font-size:16px;color:#00ffc8;text-decoration:none}
 
-  <!-- LIVE CHART -->
-  <section class="panel" id="chart">
-    <h3>Live Chart</h3>
-    <div style="aspect-ratio:16/9; max-width:100%; width:100%; background:#0e0e16; border:2px solid rgba(255,255,255,.1)">
-      <iframe id="dsFrame" src="" style="width:100%;height:100%;border:0" allowfullscreen></iframe>
+    .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:14px 0 6px}
+    .btn{border:3px solid var(--gold);color:var(--gold);padding:12px 18px;background:#1a1a20;box-shadow:0 0 12px var(--gold);text-decoration:none;text-transform:uppercase;border-radius:10px;letter-spacing:.5px}
+    .btn:hover{transform:translateY(-2px);background:#2a2a32}
+
+    iframe.chart{width:100%;height:min(70vh,560px);border:0;border-radius:10px;background:#0e0e16}
+
+    footer{position:relative;z-index:var(--ui-z);padding:40px 16px 80px;color:#bdbdbd;font:14px/1.7 system-ui;text-align:center}
+
+    /* Optional CRT scanlines over everything */
+    body:after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.05) 0px,rgba(0,0,0,.05) 2px);mix-blend-mode:overlay;pointer-events:none;z-index:var(--overlay-z)}
+
+    @media (max-width:600px){header{padding-top:64px}header h1{font-size:56px}header p.tag{font-size:18px}}
+  </style>
+</head>
+<body>
+  <!-- FX layers (behind content) -->
+  <canvas id="starfield"></canvas>
+  <div class="sprite-layer" id="sprites" aria-hidden="true"></div>
+
+  <!-- HERO -->
+  <header>
+    <h1>GBTW</h1>
+    <p class="tag">Punch In. Punch Out. Get Back To Work!</p>
+    <div class="cta-row">
+      <a id="buyLink" class="btn" target="_blank" rel="noopener">Buy on Pump.fun</a>
+      <a id="chartLink" class="btn" target="_blank" rel="noopener">Live Chart</a>
     </div>
-  </section>
+  </header>
 
-  <!-- OFFICIAL LINKS -->
-  <section class="panel" id="links">
-    <h3>Official Links</h3>
-    <div class="grid">
-      <div class="card">
-        <strong>Telegram</strong><br>
-        <a id="tgLink" href="#" target="_blank" rel="noopener">t.me/yourgroup</a>
+  <main class="container">
+    <!-- ABOUT -->
+    <section class="panel" id="about">
+      <h2>About</h2>
+      <p>This project is inspired by the CN show, Regular Show. Its something I always loved watching growing up and many others. For the ones who are familiar with it know that it was sadly discontinued, so my plan is to introduce it into the world of crypto! With profits gained from this token this project is willing to give back to communities, charities and small streamers who play video games! Everything will be transparent so follow our socials and stayed tuned!</p>
+    </section>
+
+    <!-- HOW TO BUY (Pump.fun) -->
+    <section class="panel" id="howtobuy">
+      <h2>How to Buy (Pump.fun)</h2>
+      <ol>
+        <li>Click <strong>Buy on Pump.fun</strong> above to open the token page.</li>
+        <li>Connect your wallet (Phantom for Solana; MetaMask if EVM is supported).</li>
+        <li>Enter the amount and confirm. Start small to test, then scale.</li>
+        <li>If a buy fails, try a small slippage (e.g., 1–3%).</li>
+        <li>After graduation to a DEX pair, you can also trade via the Live Chart link.</li>
+      </ol>
+    </section>
+
+    <!-- LIVE CHART (Dexscreener embed) -->
+    <section class="panel" id="chart">
+      <h2>Live Chart</h2>
+      <iframe id="dsFrame" class="chart" src="" allowfullscreen></iframe>
+    </section>
+
+    <!-- OFFICIAL LINKS -->
+    <section class="panel" id="links">
+      <h2>Official Links</h2>
+      <div class="links">
+        <a id="tgLink" href="#" target="_blank" rel="noopener">Telegram</a>
+        <a id="twLink" href="#" target="_blank" rel="noopener">Twitter / X</a>
       </div>
-      <div class="card">
-        <strong>Twitter / X</strong><br>
-        <a id="twLink" href="#" target="_blank" rel="noopener">@yourhandle</a>
-      </div>
-    </div>
-  </section>
-</main>
+    </section>
+  </main>
 
-<!-- FOOTER -->
-<footer>
-  <p><strong>Disclaimer:</strong> gbtw has no association with the CN/regular show or the creation of the following characters. we’re simply paying homage to a show plenty of us around the world loved! for informational and entertainment purposes only</p>
-  <p>© GBTW 2025</p>
-</footer>
+  <footer>
+    <p><strong>Disclaimer:</strong> gbtw has no association with the CN/regular show or the creation of the following characters. were simply paying homage to a show plenty of us around the world loved! for informational and entertainment purposes only</p>
+    <p>© GBTW 2025</p>
+  </footer>
 
-<!-- LINKS WIRING (set your URLs below) -->
-<script>
-  (function () {
-    // ====== SET THESE AFTER YOU LAUNCH ======
-    const PUMPFUN_URL   = "https://pump.fun/your-token";          // your Pump.fun token page
-    const DEXSCREENER   = "https://dexscreener.com/chain/address"; // token or pair page (works with ?embed=1)
-    const TELEGRAM_URL  = "https://t.me/yourgroup";
-    const TWITTER_URL   = "https://twitter.com/yourhandle";
-    // ========================================
+  <!-- Pixel sprite templates (coins + rockets) -->
+  <template id="tpl-coin">
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="16" height="16" fill="none"/>
+      <rect x="5" y="2" width="6" height="12" fill="#ffde59"/>
+      <rect x="4" y="3" width="8" height="10" fill="#ffd000"/>
+      <rect x="6" y="5" width="4" height="6" fill="#ffb800"/>
+      <rect x="7" y="6" width="2" height="4" fill="#ff9a00"/>
+      <rect x="4" y="3" width="8" height="1" fill="#fff3b0"/>
+    </svg>
+  </template>
+  <template id="tpl-rocket">
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="16" height="16" fill="none"/>
+      <rect x="7" y="4" width="4" height="6" fill="#9ad0ff"/>
+      <rect x="6" y="5" width="1" height="4" fill="#ff3af2"/>
+      <rect x="11" y="5" width="1" height="4" fill="#ff3af2"/>
+      <rect x="8" y="3" width="2" height="1" fill="#c7e6ff"/>
+      <rect x="6" y="8" width="1" height="2" fill="#a64dff"/>
+      <rect x="11" y="8" width="1" height="2" fill="#a64dff"/>
+      <rect x="8" y="10" width="2" height="1" fill="#ffde59"/>
+      <rect x="8" y="11" width="2" height="1" fill="#ff9a00"/>
+    </svg>
+  </template>
 
-    const buy   = document.getElementById("buyLink");
-    const chart = document.getElementById("chartLink");
-    const ds    = document.getElementById("dsFrame");
-    const tg    = document.getElementById("tgLink");
-    const tw    = document.getElementById("twLink");
-
-    if (buy)   { buy.href   = PUMPFUN_URL; buy.textContent = "Buy on Pump.fun"; }
-    if (chart) { chart.href = DEXSCREENER; chart.textContent = "Live Chart"; }
-    if (ds)    { ds.src     = DEXSCREENER + (DEXSCREENER.includes("?") ? "&" : "?") + "embed=1&theme=dark"; }
-    if (tg)    { tg.href    = TELEGRAM_URL; }
-    if (tw)    { tw.href    = TWITTER_URL; }
+  <script>
+  // ===== Starfield (random directions, behind content) =====
+  (function(){
+    const c=document.getElementById('starfield');
+    const ctx=c.getContext('2d');
+    let w,h; function resize(){w=c.width=innerWidth; h=c.height=innerHeight} addEventListener('resize',resize,{passive:true}); resize();
+    const stars=Array.from({length:280},()=>({x:Math.random()*w,y:Math.random()*h,s:1+Math.random()*1.6,dx:(Math.random()-0.5)*0.35,dy:(Math.random()-0.5)*0.35,a:0.6+Math.random()*0.4}));
+    (function tick(){ctx.clearRect(0,0,w,h);for(const s of stars){ctx.globalAlpha=s.a;ctx.fillStyle='#cfe6ff';ctx.fillRect(s.x,s.y,s.s,s.s);s.x+=s.dx;s.y+=s.dy;if(s.x<0)s.x=w;if(s.x>w)s.x=0;if(s.y<0)s.y=h;if(s.y>h)s.y=0;}ctx.globalAlpha=1;requestAnimationFrame(tick);})();
   })();
-</script>
+
+  // ===== Pixel Sprites (coins & rockets wandering in all directions) =====
+  (function(){
+    const layer=document.getElementById('sprites');
+    const tplCoin=document.getElementById('tpl-coin');
+    const tplRocket=document.getElementById('tpl-rocket');
+
+    function spawn(kind){
+      const el=document.createElement('div'); el.className='sprite';
+      // start slightly off-screen for smoother entrances
+      const startX=(Math.random()*120-10)+'vw';
+      const startY=(Math.random()*120-10)+'vh';
+      el.style.setProperty('--x', startX); el.style.setProperty('--y', startY);
+      // travel anywhere
+      const dx=(Math.random()*160-80)+'vw';
+      const dy=(Math.random()*120-60)+'vh';
+      el.style.setProperty('--dx', dx); el.style.setProperty('--dy', dy);
+      // scale & duration
+      el.style.setProperty('--s', (0.7+Math.random()*0.9));
+      const dur=12+Math.random()*14; el.style.animation=`wander ${dur}s linear forwards`;
+      el.innerHTML=(kind==='coin'?tplCoin:tplRocket).content.firstElementChild.outerHTML;
+      layer.appendChild(el);
+      el.addEventListener('animationend',()=>el.remove());
+    }
+
+    // Inject wander keyframes once
+    const css=`@keyframes wander{0%{transform:translate(var(--x),var(--y)) scale(var(--s));opacity:0}8%{opacity:1}50%{transform:translate(calc(var(--x) + var(--dx)*.5),calc(var(--y) + var(--dy)*.5)) scale(var(--s))}100%{transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy))) scale(var(--s));opacity:0}}`;
+    const style=document.createElement('style'); style.textContent=css; document.head.appendChild(style);
+
+    // initial scatter
+    for(let i=0;i<6;i++){ setTimeout(()=>spawn(Math.random()<0.6?'coin':'rocket'), i*450); }
+    // steady trickle
+    setInterval(()=> spawn(Math.random()<0.65?'coin':'rocket'), 3200);
+  })();
+
+  // ===== Wire buttons/links (set these when live) =====
+  (function(){
+    // Replace after launch
+    const PUMPFUN_URL = 'https://pump.fun/your-token';
+    const DEXSCREENER = 'https://dexscreener.com/yourpath'; // token or pair URL
+    const buy=document.getElementById('buyLink');
+    const chart=document.getElementById('chartLink');
+    const ds=document.getElementById('dsFrame');
+    const tg=document.getElementById('tgLink');
+    const tw=document.getElementById('twLink');
+
+    if(buy)   buy.href = PUMPFUN_URL;
+    if(chart) chart.href = DEXSCREENER;
+    if(ds)    ds.src = DEXSCREENER + (DEXSCREENER.includes('?')?'&':'?') + 'embed=1&theme=dark';
+    // Set your socials if you have them now
+    tg.href = 'https://t.me/gbtwomafia';
+    tw.href = 'https://x.com/GBTWcoin';
+  })();
+  </script>
+</body>
+</html>
