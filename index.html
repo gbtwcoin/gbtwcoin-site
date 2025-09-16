@@ -9,11 +9,21 @@
     :root{--gold:#ffde59;--bg:#05060b}
     body{margin:0;background:var(--bg);color:#fff;font-family:'Press Start 2P',monospace;text-align:center;overflow-x:hidden;}
     header{padding:40px 20px;position:relative;z-index:2}
-    header h1{font-family:'Bangers',cursive;font-size:108px;margin:0;letter-spacing:6px;line-height:1; /* retro layered outline like the reference */
-  color:#ff5ad1;
-  background:linear-gradient(180deg,#ff76e0 0%,#ff7f3a 55%,#ffa63a 100%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  text-shadow: /* white hard outline */ 3px 3px 0 #ffffff,-3px 3px 0 #ffffff,3px -3px 0 #ffffff,-3px -3px 0 #ffffff, /* purple drop */ 6px 6px 0 #6b2cff, 0 0 24px rgba(255,90,209,.6);
+    header h1{font-family:'Bangers',cursive;text-align:center;font-size:clamp(64px,10vw,120px);margin:0;letter-spacing:6px;line-height:1;position:relative;z-index:var(--ui-z);
+  /* Fallback fill so the title is always visible */
+  color:#ffffff; 
+  /* Bold outline + drop */
+  -webkit-text-stroke:6px #ffffff; paint-order:stroke fill; 
+  text-shadow:6px 6px 0 #6b2cff, 0 0 24px rgba(107,44,255,.55);
+}
+/* Use gradient only when background-clip:text is supported */
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  header h1{
+    background:linear-gradient(180deg,#ff76e0 0%,#ff7f3a 55%,#ffa63a 100%);
+    -webkit-background-clip:text; background-clip:text; 
+    color:transparent; -webkit-text-fill-color:transparent;
+    -webkit-text-stroke:6px #ffffff;
+  }
 }
     header p.tag{font-family:'Press Start 2P',monospace;font-size:18px;margin:14px 0 28px;color:#ffe35c;text-shadow:2px 2px 0 #000,0 0 12px #ffe35c;letter-spacing:2px;text-transform:uppercase}
     section{padding:40px 20px;max-width:900px;margin:0 auto;text-align:left;position:relative;z-index:2}
