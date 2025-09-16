@@ -6,159 +6,117 @@
   <title>GBTW • Get Back To Work</title>
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --ui-z:3;
-      --sprites-z:1;
-      --stars-z:0;
-      --overlay-z:4;
-      --accent:#ff3af2;
-      --cyan:#00e5ff;
-      --gold:#ffde59;
-      --bg:#05060b;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;background:var(--bg);color:#fff;font-family:'Press Start 2P',monospace;text-align:center;overflow-x:hidden}
-
-    canvas#starfield{position:fixed;inset:0;z-index:var(--stars-z);pointer-events:none;display:block}
-    .sprite-layer{position:fixed;inset:0;z-index:var(--sprites-z);pointer-events:none;overflow:visible}
-    .sprite{position:absolute;will-change:transform,opacity;image-rendering:pixelated;filter:drop-shadow(0 0 6px rgba(255,255,255,.25))}
-    .sprite svg{width:48px;height:48px}
-
-    header{padding:80px 20px 20px;position:relative;z-index:var(--ui-z)}
+    :root{--gold:#ffde59;--bg:#05060b}
+    body{margin:0;background:var(--bg);color:#fff;font-family:'Press Start 2P',monospace;text-align:center;overflow-x:hidden;}
+    header{padding:40px 20px;position:relative;z-index:2}
     header h1{font-family:'Bangers',cursive;font-size:96px;margin:0;letter-spacing:6px;color:#ffe35c;text-shadow:4px 4px 0 #000,0 0 18px #ff3af2,0 0 28px #ff3af2}
     header p.tag{font-size:22px;margin:12px 0 26px;color:#ff3af2;text-shadow:2px 2px 0 #000,0 0 10px #ff3af2;letter-spacing:1.5px}
-
-    .container{position:relative;z-index:var(--ui-z);max-width:980px;margin:0 auto;padding:10px 16px 80px;text-align:left}
+    section{padding:40px 20px;max-width:900px;margin:0 auto;text-align:left;position:relative;z-index:2}
     section.panel{background:linear-gradient(180deg,rgba(18,18,28,.85),rgba(12,12,20,.75));border:3px solid rgba(255,255,255,.18);border-radius:18px;box-shadow:0 14px 36px rgba(0,0,0,.6), inset 0 0 0 4px rgba(0,0,0,.35);padding:26px;margin:22px 0}
     h2{font-family:'Press Start 2P',monospace;font-size:24px;margin:0 0 16px;color:#ffe35c;text-shadow:3px 3px 0 #000,0 0 10px #a64dff;letter-spacing:1px}
-    p,ol,li,a{font-family:'Press Start 2P',monospace}
     p{font-size:13px;line-height:1.9;color:#f3f3f3;text-shadow:1px 1px 3px #000}
     ol{font-size:13px;line-height:2;color:#f3f3f3;padding-left:22px;text-shadow:1px 1px 3px #000}
-    .links a{display:block;margin:10px 0;font-size:13px;color:#00ffc8;text-decoration:none;text-shadow:1px 1px 2px #000}
-
-    .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:14px 0 6px}
-    .btn{border:3px solid var(--gold);color:#fff;padding:12px 18px;background:#1a1a20;box-shadow:0 0 18px var(--gold), inset 0 -6px 0 #704c00;text-decoration:none;text-transform:uppercase;border-radius:10px;letter-spacing:1px;font-size:16px;text-shadow:2px 2px 4px #000;position:relative;animation:btnPulse 1.6s ease-in-out infinite alternate}
-
-.btn:before{content:"";position:absolute;inset:0;border-radius:8px;box-shadow:0 0 22px rgba(255,222,89,.75),0 0 40px rgba(255,222,89,.35);opacity:.7;pointer-events:none}
-
-.btn:hover{transform:translateY(-2px) scale(1.03);background:#2a2a32}
-
-    .btn:hover{transform:translateY(-2px);background:#2a2a32}
-
     iframe.chart{width:100%;height:min(70vh,560px);border:0;border-radius:12px;background:#0e0e16;box-shadow:0 10px 30px rgba(0,0,0,.55)}
-
-    footer{position:relative;z-index:var(--ui-z);padding:40px 16px 80px;color:#e0e0e0;font:15px/1.8 system-ui;text-align:center;text-shadow:1px 1px 3px #000}
-
-    body:after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.04) 0px,rgba(0,0,0,.06) 2px);mix-blend-mode:overlay;pointer-events:none;z-index:var(--overlay-z)}
-
-    @media (max-width:600px){header{padding-top:64px}header h1{font-size:64px}header p.tag{font-size:20px}}
-  @keyframes btnPulse{0%{box-shadow:0 0 14px var(--gold), inset 0 -6px 0 #704c00;filter:brightness(1)}100%{box-shadow:0 0 28px var(--gold),0 0 60px rgba(255,222,89,.45), inset 0 -3px 0 #704c00;filter:brightness(1.15)}}
+    .links a{display:block;margin:10px 0;font-size:13px;color:#00ffc8;text-decoration:none;text-shadow:1px 1px 2px #000}
+    footer{padding:40px 20px;font-size:12px;color:#aaa;background:#0b0c12;margin-top:40px;position:relative;z-index:2}
+    .btn{border:3px solid var(--gold);color:#fff;padding:12px 18px;background:#1a1a20;box-shadow:0 0 24px var(--gold), inset 0 -6px 0 #704c00;text-decoration:none;text-transform:uppercase;border-radius:10px;letter-spacing:1px;font-size:16px;text-shadow:2px 2px 4px #000;position:relative;animation:btnPulse 1.6s ease-in-out infinite alternate}
+    .btn:before{content:"";position:absolute;inset:0;border-radius:8px;box-shadow:0 0 28px rgba(255,222,89,.85),0 0 60px rgba(255,222,89,.45);opacity:.8;pointer-events:none}
+    .btn:hover{transform:translateY(-2px) scale(1.03);background:#2a2a32}
+    @keyframes btnPulse{0%{box-shadow:0 0 18px var(--gold), inset 0 -6px 0 #704c00;filter:brightness(1)}100%{box-shadow:0 0 36px var(--gold),0 0 70px rgba(255,222,89,.55), inset 0 -3px 0 #704c00;filter:brightness(1.2)}}
+    /* background layers */
+    #stars{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:0}
+    #sprites{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+    .sprite{position:absolute;font-size:22px;}
+    @keyframes wander{0%{transform:translate(var(--x),var(--y)) scale(var(--s)) rotate(var(--ang));opacity:0}8%{opacity:1}50%{transform:translate(calc(var(--x) + var(--dx)*.5),calc(var(--y) + var(--dy)*.5)) scale(var(--s)) rotate(var(--ang))}100%{transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy))) scale(var(--s)) rotate(var(--ang));opacity:0}}
+  /* --- Glow boost overrides --- */
+.btn{animation:btnPulseArcade 1.3s ease-in-out infinite alternate;box-shadow:0 0 22px var(--gold),0 0 60px rgba(255,222,89,.35), inset 0 -6px 0 #704c00}
+.btn:before{box-shadow:0 0 30px rgba(255,222,89,.9),0 0 90px rgba(255,222,89,.45);opacity:.85}
+@keyframes btnPulseArcade{0%{filter:brightness(1);box-shadow:0 0 20px var(--gold),0 0 40px rgba(255,222,89,.3), inset 0 -6px 0 #704c00}100%{filter:brightness(1.2);box-shadow:0 0 40px var(--gold),0 0 100px rgba(255,222,89,.6), inset 0 -3px 0 #704c00}}
 </style>
 </head>
 <body>
   <!-- Arcade HUD -->
   <div style="position:fixed;top:10px;left:16px;z-index:3;color:#a64dff;font-family:'Press Start 2P',monospace;font-size:12px;letter-spacing:1px;text-shadow:2px 2px 0 #000">1 UP&nbsp;&nbsp;25000</div>
   <div style="position:fixed;top:10px;right:16px;z-index:3;color:#a64dff;font-family:'Press Start 2P',monospace;font-size:12px;letter-spacing:1px;text-shadow:2px 2px 0 #000">2 UP&nbsp;&nbsp;003200</div>
-  <canvas id="starfield"></canvas>
-  <div class="sprite-layer" id="sprites" aria-hidden="true"></div>
+
+  <div id="stars"></div>
+  <div id="sprites"></div>
 
   <header>
     <h1>GBTW</h1>
     <p class="tag">Punch In. Punch Out. Get Back To Work!</p>
-    <div class="cta-row">
-      <a id="buyLink" class="btn" target="_blank" rel="noopener">Buy on Pump.fun</a>
-      <a id="chartLink" class="btn" target="_blank" rel="noopener">Live Chart</a>
-    </div>
   </header>
 
-  <main class="container">
-    <section class="panel" id="about">
-      <h2>About</h2>
-      <p>This project is inspired by the CN show, Regular Show. Its something I always loved watching growing up and many others. For the ones who are familiar with it know that it was sadly discontinued, so my plan is to introduce it into the world of crypto! With profits gained from this token this project is willing to give back to communities, charities and small streamers who play video games! Everything will be transparent so follow our socials and stayed tuned!</p>
-    </section>
+  <section class="panel" id="about">
+    <h2>About</h2>
+    <p>This project is inspired by the CN show, <strong>Regular Show</strong>. It’s something I always loved watching growing up and many others did too. For those who are familiar with it, you know it was sadly discontinued. So my plan is to introduce it into the world of crypto! With profits gained from this token, this project is willing to give back to communities, charities and small streamers who play video games! Everything will be transparent so follow our socials and stay tuned!</p>
+  </section>
 
-    <section class="panel" id="howtobuy">
-      <h2>How to Buy (Pump.fun)</h2>
-      <ol>
-        <li>Click <strong>Buy on Pump.fun</strong> above to open the token page.</li>
-        <li>Connect your wallet (Phantom for Solana; MetaMask if EVM is supported).</li>
-        <li>Enter the amount and confirm. Start small to test, then scale.</li>
-        <li>If a buy fails, try a small slippage (e.g., 1–3%).</li>
-        <li>After graduation to a DEX pair, you can also trade via the Live Chart link.</li>
-      </ol>
-    </section>
+  <section class="panel" id="howtobuy">
+    <h2>How to Buy</h2>
+    <ol>
+      <li>Go to the official <strong>Pump.fun</strong> page for GBTW.</li>
+      <li>Connect your wallet (Phantom or MetaMask depending on chain).</li>
+      <li>Enter how much you want to buy and confirm the transaction.</li>
+      <li>That’s it! You now hold GBTW. 🎉</li>
+    </ol>
+  </section>
 
-    <section class="panel" id="chart">
-      <h2>Live Chart</h2>
-      <iframe id="dsFrame" class="chart" src="" allowfullscreen></iframe>
-    </section>
+  <section class="panel" id="chart">
+    <h2>Live Chart</h2>
+    <iframe class="chart" src="https://dexscreener.com" allowfullscreen></iframe>
+  </section>
 
-    <section class="panel" id="links">
-      <h2>Official Links</h2>
-      <div class="links">
-        <a id="tgLink" href="https://t.me/gbtwomafia" target="_blank" rel="noopener">Telegram</a>
-        <a id="twLink" href="https://x.com/GBTWcoin" target="_blank" rel="noopener">Twitter / X</a>
-      </div>
-    </section>
-  </main>
+  <section class="panel" id="links">
+    <h2>Official Links</h2>
+    <div class="links">
+      <a href="https://t.me/gbtwomafia" target="_blank">Telegram</a>
+      <a href="https://x.com/GBTWcoin" target="_blank">Twitter / X</a>
+    </div>
+  </section>
 
   <footer>
-    <p><strong>Disclaimer:</strong> gbtw has no association with the CN/regular show or the creation of the following characters. were simply paying homage to a show plenty of us around the world loved! for informational and entertainment purposes only</p>
+    <p>Disclaimer: GBTW has no association with Cartoon Network, Regular Show, or the creation of its characters. We’re simply paying homage to a show many of us around the world loved! For informational and entertainment purposes only.</p>
     <p>© GBTW 2025</p>
   </footer>
 
   <script>
-  (function(){
-    const c=document.getElementById('starfield');
-    const ctx=c.getContext('2d');
-    let w,h; function resize(){w=c.width=innerWidth; h=c.height=innerHeight} addEventListener('resize',resize,{passive:true}); resize();
-    const stars=Array.from({length:280},()=>({x:Math.random()*w,y:Math.random()*h,s:1+Math.random()*1.6,dx:(Math.random()-0.5)*0.35,dy:(Math.random()-0.5)*0.35,a:0.7+Math.random()*0.3}));
-    (function tick(){ctx.clearRect(0,0,w,h);for(const s of stars){ctx.globalAlpha=s.a;ctx.fillStyle='#cfe6ff';ctx.fillRect(s.x,s.y,s.s,s.s);s.x+=s.dx;s.y+=s.dy;if(s.x<0)s.x=w;if(s.x>w)s.x=0;if(s.y<0)s.y=h;if(s.y>h)s.y=0;}ctx.globalAlpha=1;requestAnimationFrame(tick);})();
-  })();
+    const starLayer=document.getElementById('stars');
+    for(let i=0;i<120;i++){
+      const s=document.createElement('div');
+      s.style.position='absolute';
+      s.style.width=s.style.height=Math.random()*2+1+'px';
+      s.style.background='#fff';
+      s.style.left=Math.random()*100+'%';
+      s.style.top=Math.random()*100+'%';
+      s.style.opacity=Math.random();
+      starLayer.appendChild(s);
+    }
 
-  (function(){
     const layer=document.getElementById('sprites');
-    const tplCoin=`<div class='sprite'>🪙</div>`;
-    const tplRocket=`<div class='sprite'>🚀</div>`;
+    const tplRocket=document.createElement('template');
+    tplRocket.innerHTML='<span style="display:inline-block">🚀</span>';
+    const tplCoin=document.createElement('template');
+    tplCoin.innerHTML='<span style="display:inline-block">🪙</span>';
+
     function spawn(kind){
       const el=document.createElement('div'); el.className='sprite';
-      // start anywhere, slightly off-screen sometimes
       const startX=(Math.random()*120-10)+'vw';
       const startY=(Math.random()*120-10)+'vh';
       el.style.setProperty('--x', startX); el.style.setProperty('--y', startY);
-      // travel vector
-      const dxVal=(Math.random()*160-80); // vw delta
-      const dyVal=(Math.random()*120-60); // vh delta
+      const dxVal=(Math.random()*160-80);
+      const dyVal=(Math.random()*120-60);
       el.style.setProperty('--dx', dxVal+'vw');
       el.style.setProperty('--dy', dyVal+'vh');
-      // angle so rockets point where they fly
-      const angle=Math.atan2(dyVal, dxVal) * 180/Math.PI; // deg
-      el.style.setProperty('--ang', (kind==='rocket' ? angle+'deg' : '0deg'));
+      const angle=Math.atan2(dyVal, dxVal) * 180/Math.PI;
+      el.style.setProperty('--ang', (kind==='rocket'? angle+'deg':'0deg'));
       el.style.setProperty('--s', (0.8+Math.random()*0.8));
       const dur=12+Math.random()*14; el.style.animation=`wander ${dur}s linear forwards`;
       el.innerHTML=(kind==='coin'? tplCoin : tplRocket).content.firstElementChild.outerHTML;
       layer.appendChild(el);
       el.addEventListener('animationend',()=>el.remove());
-    }s linear forwards`;
-      layer.appendChild(el);
-      setTimeout(()=>el.remove(),dur*1000);
     }
-    const css=`@keyframes wander{0%{transform:translate(var(--x),var(--y)) scale(var(--s)) rotate(var(--ang));opacity:0}8%{opacity:1}50%{transform:translate(calc(var(--x) + var(--dx)*.5),calc(var(--y) + var(--dy)*.5)) scale(var(--s)) rotate(var(--ang))}100%{transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy))) scale(var(--s)) rotate(var(--ang));opacity:0}}`;;
-    const style=document.createElement('style'); style.textContent=css; document.head.appendChild(style);
-    setInterval(()=> spawn(Math.random()<0.65?'coin':'rocket'), 3200);
-  })();
-
-  (function(){
-    const PUMPFUN_URL = 'https://pump.fun/your-token';
-    const DEXSCREENER = 'https://dexscreener.com/yourpath';
-    const buy=document.getElementById('buyLink');
-    const chart=document.getElementById('chartLink');
-    const ds=document.getElementById('dsFrame');
-    if(buy)   buy.href = PUMPFUN_URL;
-    if(chart) chart.href = DEXSCREENER;
-    if(ds)    ds.src = DEXSCREENER + (DEXSCREENER.includes('?')?'&':'?') + 'embed=1&theme=dark';
-  })();
+    setInterval(()=>spawn(Math.random()<0.5?'coin':'rocket'),1200);
   </script>
 </body>
 </html>
