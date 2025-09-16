@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GBTW • Get Back To Work</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     :root{
       --ui-z:3;
@@ -18,7 +18,7 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;background:var(--bg);color:#fff;font-family:'Bangers',sans-serif;text-align:center;overflow-x:hidden}
+    body{margin:0;background:var(--bg);color:#fff;font-family:'Press Start 2P',monospace;text-align:center;overflow-x:hidden}
 
     canvas#starfield{position:fixed;inset:0;z-index:var(--stars-z);pointer-events:none;display:block}
     .sprite-layer{position:fixed;inset:0;z-index:var(--sprites-z);pointer-events:none;overflow:visible}
@@ -26,31 +26,40 @@
     .sprite svg{width:48px;height:48px}
 
     header{padding:80px 20px 20px;position:relative;z-index:var(--ui-z)}
-    header h1{font-size:90px;margin:0;letter-spacing:4px;color:#fff;text-shadow:4px 4px 0 #000,0 0 18px var(--accent),0 0 28px var(--accent)}
-    header p.tag{font-size:28px;margin:12px 0 26px;color:#fff;text-shadow:2px 2px 0 #000,0 0 10px var(--cyan)}
+    header h1{font-family:'Bangers',cursive;font-size:96px;margin:0;letter-spacing:6px;color:#ffe35c;text-shadow:4px 4px 0 #000,0 0 18px #ff3af2,0 0 28px #ff3af2}
+    header p.tag{font-size:22px;margin:12px 0 26px;color:#ff3af2;text-shadow:2px 2px 0 #000,0 0 10px #ff3af2;letter-spacing:1.5px}
 
     .container{position:relative;z-index:var(--ui-z);max-width:980px;margin:0 auto;padding:10px 16px 80px;text-align:left}
-    section.panel{background:rgba(16,16,28,.7);border:1px solid rgba(255,255,255,.18);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:22px;margin:18px 0}
-    h2{font-size:34px;margin:0 0 16px;color:var(--gold);text-shadow:2px 2px 4px #000}
-    p,ol,li,a{font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
-    p{font-size:17px;line-height:1.8;color:#f3f3f3;text-shadow:1px 1px 3px #000}
-    ol{font-size:17px;line-height:1.85;color:#f3f3f3;padding-left:22px;text-shadow:1px 1px 3px #000}
-    .links a{display:block;margin:8px 0;font-size:18px;color:#00ffc8;text-decoration:none;text-shadow:1px 1px 2px #000}
+    section.panel{background:linear-gradient(180deg,rgba(18,18,28,.85),rgba(12,12,20,.75));border:3px solid rgba(255,255,255,.18);border-radius:18px;box-shadow:0 14px 36px rgba(0,0,0,.6), inset 0 0 0 4px rgba(0,0,0,.35);padding:26px;margin:22px 0}
+    h2{font-family:'Press Start 2P',monospace;font-size:24px;margin:0 0 16px;color:#ffe35c;text-shadow:3px 3px 0 #000,0 0 10px #a64dff;letter-spacing:1px}
+    p,ol,li,a{font-family:'Press Start 2P',monospace}
+    p{font-size:13px;line-height:1.9;color:#f3f3f3;text-shadow:1px 1px 3px #000}
+    ol{font-size:13px;line-height:2;color:#f3f3f3;padding-left:22px;text-shadow:1px 1px 3px #000}
+    .links a{display:block;margin:10px 0;font-size:13px;color:#00ffc8;text-decoration:none;text-shadow:1px 1px 2px #000}
 
     .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:14px 0 6px}
-    .btn{border:3px solid var(--gold);color:#fff;padding:12px 18px;background:#1a1a20;box-shadow:0 0 12px var(--gold);text-decoration:none;text-transform:uppercase;border-radius:10px;letter-spacing:.5px;font-size:18px;text-shadow:2px 2px 4px #000}
+    .btn{border:3px solid var(--gold);color:#fff;padding:12px 18px;background:#1a1a20;box-shadow:0 0 18px var(--gold), inset 0 -6px 0 #704c00;text-decoration:none;text-transform:uppercase;border-radius:10px;letter-spacing:1px;font-size:16px;text-shadow:2px 2px 4px #000;position:relative;animation:btnPulse 1.6s ease-in-out infinite alternate}
+
+.btn:before{content:"";position:absolute;inset:0;border-radius:8px;box-shadow:0 0 22px rgba(255,222,89,.75),0 0 40px rgba(255,222,89,.35);opacity:.7;pointer-events:none}
+
+.btn:hover{transform:translateY(-2px) scale(1.03);background:#2a2a32}
+
     .btn:hover{transform:translateY(-2px);background:#2a2a32}
 
-    iframe.chart{width:100%;height:min(70vh,560px);border:0;border-radius:10px;background:#0e0e16}
+    iframe.chart{width:100%;height:min(70vh,560px);border:0;border-radius:12px;background:#0e0e16;box-shadow:0 10px 30px rgba(0,0,0,.55)}
 
     footer{position:relative;z-index:var(--ui-z);padding:40px 16px 80px;color:#e0e0e0;font:15px/1.8 system-ui;text-align:center;text-shadow:1px 1px 3px #000}
 
     body:after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.04) 0px,rgba(0,0,0,.06) 2px);mix-blend-mode:overlay;pointer-events:none;z-index:var(--overlay-z)}
 
     @media (max-width:600px){header{padding-top:64px}header h1{font-size:64px}header p.tag{font-size:20px}}
-  </style>
+  @keyframes btnPulse{0%{box-shadow:0 0 14px var(--gold), inset 0 -6px 0 #704c00;filter:brightness(1)}100%{box-shadow:0 0 28px var(--gold),0 0 60px rgba(255,222,89,.45), inset 0 -3px 0 #704c00;filter:brightness(1.15)}}
+</style>
 </head>
 <body>
+  <!-- Arcade HUD -->
+  <div style="position:fixed;top:10px;left:16px;z-index:3;color:#a64dff;font-family:'Press Start 2P',monospace;font-size:12px;letter-spacing:1px;text-shadow:2px 2px 0 #000">1 UP&nbsp;&nbsp;25000</div>
+  <div style="position:fixed;top:10px;right:16px;z-index:3;color:#a64dff;font-family:'Press Start 2P',monospace;font-size:12px;letter-spacing:1px;text-shadow:2px 2px 0 #000">2 UP&nbsp;&nbsp;003200</div>
   <canvas id="starfield"></canvas>
   <div class="sprite-layer" id="sprites" aria-hidden="true"></div>
 
@@ -113,14 +122,29 @@
     const tplCoin=`<div class='sprite'>🪙</div>`;
     const tplRocket=`<div class='sprite'>🚀</div>`;
     function spawn(kind){
-      const el=document.createElement('div'); el.className='sprite'; el.textContent=(kind==='coin'? '🪙':'🚀');
-      el.style.left=Math.random()*100+'vw';
-      el.style.top=Math.random()*100+'vh';
+      const el=document.createElement('div'); el.className='sprite';
+      // start anywhere, slightly off-screen sometimes
+      const startX=(Math.random()*120-10)+'vw';
+      const startY=(Math.random()*120-10)+'vh';
+      el.style.setProperty('--x', startX); el.style.setProperty('--y', startY);
+      // travel vector
+      const dxVal=(Math.random()*160-80); // vw delta
+      const dyVal=(Math.random()*120-60); // vh delta
+      el.style.setProperty('--dx', dxVal+'vw');
+      el.style.setProperty('--dy', dyVal+'vh');
+      // angle so rockets point where they fly
+      const angle=Math.atan2(dyVal, dxVal) * 180/Math.PI; // deg
+      el.style.setProperty('--ang', (kind==='rocket' ? angle+'deg' : '0deg'));
+      el.style.setProperty('--s', (0.8+Math.random()*0.8));
       const dur=12+Math.random()*14; el.style.animation=`wander ${dur}s linear forwards`;
+      el.innerHTML=(kind==='coin'? tplCoin : tplRocket).content.firstElementChild.outerHTML;
+      layer.appendChild(el);
+      el.addEventListener('animationend',()=>el.remove());
+    }s linear forwards`;
       layer.appendChild(el);
       setTimeout(()=>el.remove(),dur*1000);
     }
-    const css=`@keyframes wander{0%{transform:translate(0,0);opacity:0}8%{opacity:1}50%{transform:translate(${Math.random()*200-100}vw,${Math.random()*200-100}vh)}100%{transform:translate(${Math.random()*200-100}vw,${Math.random()*200-100}vh);opacity:0}}`;
+    const css=`@keyframes wander{0%{transform:translate(var(--x),var(--y)) scale(var(--s)) rotate(var(--ang));opacity:0}8%{opacity:1}50%{transform:translate(calc(var(--x) + var(--dx)*.5),calc(var(--y) + var(--dy)*.5)) scale(var(--s)) rotate(var(--ang))}100%{transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy))) scale(var(--s)) rotate(var(--ang));opacity:0}}`;;
     const style=document.createElement('style'); style.textContent=css; document.head.appendChild(style);
     setInterval(()=> spawn(Math.random()<0.65?'coin':'rocket'), 3200);
   })();
